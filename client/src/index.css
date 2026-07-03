@@ -1825,3 +1825,174 @@ img {
     border-radius: 26px;
   }
 }
+.about-section,
+.contact-section {
+  background: #ffffff;
+}
+
+.about-grid,
+.contact-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 54px;
+  align-items: center;
+}
+
+.about-visual {
+  position: relative;
+}
+
+.about-visual img {
+  width: 100%;
+  height: 520px;
+  border: 12px solid #ffffff;
+  border-radius: 34px;
+  object-fit: cover;
+  box-shadow: var(--shadow);
+}
+
+.about-floating-card {
+  position: absolute;
+  right: -18px;
+  bottom: 34px;
+  width: 240px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.about-floating-card strong,
+.about-floating-card span {
+  display: block;
+}
+
+.about-floating-card span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.about-points {
+  display: grid;
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.about-points div {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: #f8fafc;
+}
+
+.about-points strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.about-points p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.contact-info h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.contact-info > p {
+  max-width: 620px;
+  margin: 20px 0 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.contact-cards {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.contact-cards div {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: #f8fafc;
+}
+
+.contact-cards span,
+.contact-cards strong,
+.contact-cards p {
+  display: block;
+}
+
+.contact-cards span {
+  font-size: 1.5rem;
+}
+
+.contact-cards strong {
+  margin-top: 8px;
+}
+
+.contact-cards p {
+  margin: 5px 0 0;
+  color: var(--muted);
+}
+
+.contact-form {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.contact-submit {
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  cursor: pointer;
+}
+
+.contact-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 980px) {
+  .about-grid,
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-visual img {
+    height: 420px;
+  }
+
+  .about-floating-card {
+    position: static;
+    width: auto;
+    margin-top: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-visual img {
+    height: 320px;
+    border-width: 8px;
+    border-radius: 26px;
+  }
+
+  .contact-form {
+    padding: 20px;
+    border-radius: 26px;
+  }
+}
