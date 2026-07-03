@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../services/api";
 import ProductCard from "../../components/common/ProductCard";
@@ -93,14 +93,7 @@ const Home = () => {
                 alt="Online shopping"
               />
             </div>
-            <div className="floating-card floating-card--top">
-              <strong>Secure Checkout</strong>
-              <span>Razorpay ready payment flow</span>
-            </div>
-            <div className="floating-card floating-card--bottom">
-              <strong>Fast Product APIs</strong>
-              <span>Search, filters, pagination</span>
-            </div>
+
           </div>
         </div>
       </section>
