@@ -1,30 +1,56 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 
 const Navbar = () => {
+  const [open, setOpen] = useState(false);
+
+  const closeMenu = () => setOpen(false);
+
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link to="/" className="text-lg font-semibold text-slate-900">
-          ShopSphere
+    <header className="navbar">
+      <div className="container navbar__inner">
+        <Link to="/" className="navbar__brand" onClick={closeMenu}>
+          <span className="navbar__brand-icon">S</span>
+          <span>ShopSphere</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link to="/products" className="text-slate-600 hover:text-slate-900">
-            Shop
-          </Link>
-          <Link to="/about" className="text-slate-600 hover:text-slate-900">
+
+        <button
+          className="navbar__toggle"
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          aria-label="Toggle navigation"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <nav className={`navbar__links ${open ? "navbar__links--open" : ""}`}>
+          <NavLink to="/" onClick={closeMenu}>
+            Home
+          </NavLink>
+          <NavLink to="/products" onClick={closeMenu}>
+            Products
+          </NavLink>
+          <NavLink to="/about" onClick={closeMenu}>
             About
-          </Link>
-          <Link to="/blog" className="text-slate-600 hover:text-slate-900">
-            Blog
-          </Link>
-          <Link to="/contact" className="text-slate-600 hover:text-slate-900">
+          </NavLink>
+          <NavLink to="/contact" onClick={closeMenu}>
             Contact
-          </Link>
-          <Link to="/checkout" className="rounded-2xl bg-slate-900 px-3 py-2 text-white text-sm hover:bg-slate-800">
+          </NavLink>
+          <NavLink to="/checkout" onClick={closeMenu}>
             Checkout
-          </Link>
+          </NavLink>
         </nav>
+
+        <div className="navbar__actions">
+          <Link to="/login" className="btn btn--ghost">
+            Login
+          </Link>
+          <Link to="/register" className="btn">
+            Sign up
+          </Link>
+        </div>
       </div>
     </header>
   );
