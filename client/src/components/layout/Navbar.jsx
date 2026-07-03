@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getCartCount } from "../../utils/cartStorage";
+import { clearAuthData, getAuthUser } from "../../utils/authStorage";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [user, setUser] = useState(null);
 
   const closeMenu = () => setOpen(false);
 
@@ -12,17 +17,32 @@ const Navbar = () => {
     setCartCount(getCartCount());
   };
 
+  const refreshAuthUser = () => {
+    setUser(getAuthUser());
+  };
+
   useEffect(() => {
     refreshCartCount();
+    refreshAuthUser();
 
     window.addEventListener("cart-updated", refreshCartCount);
+    window.addEventListener("auth-updated", refreshAuthUser);
     window.addEventListener("storage", refreshCartCount);
+    window.addEventListener("storage", refreshAuthUser);
 
     return () => {
       window.removeEventListener("cart-updated", refreshCartCount);
+      window.removeEventListener("auth-updated", refreshAuthUser);
       window.removeEventListener("storage", refreshCartCount);
+      window.removeEventListener("storage", refreshAuthUser);
     };
   }, []);
+
+  const handleLogout = () => {
+    clearAuthData();
+    toast.success("Logged out successfully");
+    navigate("/");
+  };
 
   return (
     <header className="navbar">
@@ -67,12 +87,28 @@ const Navbar = () => {
             <span>{cartCount}</span>
           </Link>
 
-          <Link to="/login" className="btn btn--ghost">
-            Login
-          </Link>
-          <Link to="/register" className="btn">
-            Sign up
-          </Link>
+          {user ? (
+            <div className="user-menu">
+              <span className="user-menu__avatar">
+                {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+              </span>
+              <div>
+                <strong>{user?.name || "User"}</strong>
+                <button type="button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn--ghost">
+                Login
+              </Link>
+              <Link to="/register" className="btn">
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
