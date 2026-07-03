@@ -72,6 +72,9 @@ const Navbar = () => {
           </NavLink>
           <NavLink to="/cart" onClick={closeMenu}>
             Cart
+            <NavLink to="/orders" onClick={closeMenu}>
+              Orders
+             </NavLink>
           </NavLink>
           <NavLink to="/about" onClick={closeMenu}>
             About
