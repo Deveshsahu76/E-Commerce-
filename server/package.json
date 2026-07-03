@@ -1,13 +1,13 @@
-{
-  "name": "server",
+﻿{
+  "name": "mern-ecommerce-server",
   "version": "1.0.0",
-  "description": "ShopSphere Backend API",
+  "description": "ShopSphere backend API for MERN E-Commerce Store",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed": "node seeder.js"
   },
-  "keywords": [],
   "author": "Devesh Sahu",
   "license": "ISC",
   "dependencies": {
