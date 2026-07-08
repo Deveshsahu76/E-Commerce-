@@ -196,14 +196,20 @@ const forgotPassword = async (req, res) => {
       success: true,
       message: "OTP sent successfully to your registered email.",
     });
-  } catch (error) {
-    console.error("FORGOT PASSWORD ERROR:", error);
+  }  catch (error) {
+  console.error("FORGOT PASSWORD ERROR:", {
+    message: error.message,
+    code: error.code,
+    command: error.command,
+    response: error.response,
+    responseCode: error.responseCode,
+  });
 
-    res.status(500).json({
-      success: false,
-      message: "Unable to send OTP. Please check email service configuration.",
-    });
-  }
+  res.status(500).json({
+    success: false,
+    message: "Unable to send OTP. Please check email service configuration.",
+  });
+}
 };
 
 const resetPassword = async (req, res) => {
