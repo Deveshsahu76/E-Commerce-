@@ -1,3 +1,23 @@
+cd D:\E-Commerce
+
+function Write-Utf8NoBomFile {
+  param (
+    [string]$Path,
+    [string]$Content
+  )
+
+  $fullPath = Join-Path "D:\E-Commerce" $Path
+  $directory = Split-Path $fullPath -Parent
+
+  if (!(Test-Path $directory)) {
+    New-Item -ItemType Directory -Force -Path $directory | Out-Null
+  }
+
+  $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+  [System.IO.File]::WriteAllText($fullPath, $Content, $utf8NoBom)
+}
+
+Write-Utf8NoBomFile "server/controllers/authController.js" @'
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
@@ -20,7 +40,7 @@ const buildOtpEmail = ({ name, otp }) => {
     text: `Hello ${safeName}, your ShopSphere password reset OTP is ${otp}. This OTP is valid for ${OTP_EXPIRY_MINUTES} minutes. If you did not request this, please ignore this email.`,
     html: `
       <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:560px;margin:auto;border:1px solid #eee;border-radius:16px;padding:24px">
-        <h2 style="margin:0 0 10px">Password Reset OTP</h2>
+        <h2 style="margin:0 0 10px">ShopSphere Password Reset OTP</h2>
         <p>Hello ${safeName},</p>
         <p>Use the OTP below to reset your ShopSphere account password.</p>
         <div style="font-size:32px;letter-spacing:8px;font-weight:800;background:#f7f3ec;padding:16px 20px;border-radius:14px;text-align:center">
@@ -164,13 +184,10 @@ const forgotPassword = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    const safeMessage =
-      "If this email is registered, an OTP has been sent for password reset.";
-
     if (!user) {
-      return res.status(200).json({
-        success: true,
-        message: safeMessage,
+      return res.status(404).json({
+        success: false,
+        message: "No account found with this email.",
       });
     }
 
@@ -188,26 +205,23 @@ const forgotPassword = async (req, res) => {
       otp,
     });
 
-    const sent = await sendEmail({
+    await sendEmail({
       to: user.email,
       subject: emailContent.subject,
       text: emailContent.text,
       html: emailContent.html,
     });
 
-    if (!sent && process.env.NODE_ENV !== "production") {
-      console.log(`Password reset OTP for ${user.email}: ${otp}`);
-    }
-
     res.status(200).json({
       success: true,
-      message: safeMessage,
+      message: "OTP sent successfully to your registered email.",
     });
   } catch (error) {
     console.error("FORGOT PASSWORD ERROR:", error);
+
     res.status(500).json({
       success: false,
-      message: "Unable to process password reset request",
+      message: "Unable to send OTP. Please check email service configuration.",
     });
   }
 };
@@ -312,3 +326,4 @@ module.exports = {
   forgotPassword,
   resetPassword,
 };
+'@
