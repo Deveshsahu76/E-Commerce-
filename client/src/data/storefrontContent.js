@@ -1,52 +1,81 @@
 export const storefrontContent = {
   hero: {
-    eyebrow: "Premium Store • Fast Shopping • Trusted Checkout",
-    title: "Shop smart with a clean, modern shopping experience.",
+    eyebrow: "Snake Repellent • Solar Pest Control • Outdoor Protection",
+    title: "Protect your home, farm and garden with trusted repellent products.",
     subtitle:
-      "Explore quality products, smooth search, quick cart actions, and a simple checkout flow designed for real customers.",
+      "Shop snake repellers, solar pest repellers, ultrasonic rodent controllers and outdoor protection devices in one focused store.",
     primaryCta: {
-      label: "Start Shopping",
+      label: "View Products",
       link: "/products",
     },
     secondaryCta: {
-      label: "Explore Offers",
-      link: "/offers",
+      label: "Contact Support",
+      link: "/support",
     },
   },
 
-  heroPromo: {
-    enabled: false,
-    badge: "Special Offer",
-    title: "Limited-time offer is live",
-    description: "This promo can be connected with admin controls later.",
-    ctaLabel: "View Offer",
-    ctaLink: "/offers",
-  },
-
   categories: [
-    "Electronics",
-    "Fashion",
-    "Home",
-    "Accessories",
-    "Daily Picks",
+    {
+      label: "Snake Repellers",
+      keyword: "snake",
+    },
+    {
+      label: "Solar Repellers",
+      keyword: "solar",
+    },
+    {
+      label: "Ultrasonic Devices",
+      keyword: "ultrasonic",
+    },
+    {
+      label: "Rodent Control",
+      keyword: "rat mouse rodent",
+    },
   ],
 
   trustCards: [
     {
-      title: "Secure Checkout",
-      description: "Smooth and trusted payment experience.",
+      title: "Outdoor Use",
+      description: "Useful for home surroundings, gardens, farms and open areas.",
     },
     {
-      title: "Quick Ordering",
-      description: "Add products to cart and checkout faster.",
+      title: "Solar Options",
+      description: "Solar-powered options for convenient outdoor placement.",
     },
     {
-      title: "Quality Listings",
-      description: "Clear product images, prices, and details.",
-    },
-    {
-      title: "Order Support",
-      description: "Helpful support for orders and delivery.",
+      title: "Easy Shopping",
+      description: "Simple product browsing, cart and checkout flow.",
     },
   ],
+};
+
+export const isRepellentProduct = (product = {}) => {
+  const text = [
+    product.name,
+    product.title,
+    product.category,
+    product.brand,
+    product.description,
+    product.shortDescription,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  const keywords = [
+    "snake",
+    "repellent",
+    "repeller",
+    "pest",
+    "solar",
+    "ultrasonic",
+    "rat",
+    "mouse",
+    "mice",
+    "rodent",
+    "vibrarandom",
+    "vibrandum",
+  ];
+
+  return keywords.some((keyword) => text.includes(keyword));
 };

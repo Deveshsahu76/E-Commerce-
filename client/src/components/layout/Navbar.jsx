@@ -5,11 +5,11 @@ import { getUser, isLoggedIn, logout } from "../../utils/authUtils";
 
 const navItems = [
   { label: "Products", to: "/products" },
-  { label: "Offers", to: "/offers" },
-  { label: "New Arrivals", to: "/new-arrivals" },
-  { label: "Best Sellers", to: "/best-sellers" },
+  { label: "Snake Repellers", to: "/products?keyword=snake" },
+  { label: "Solar Repellers", to: "/products?keyword=solar" },
+  { label: "Ultrasonic", to: "/products?keyword=ultrasonic" },
+  { label: "Rodent Control", to: "/products?keyword=rodent" },
   { label: "Support", to: "/support" },
-  { label: "Track Order", to: "/track-order" },
 ];
 
 const Navbar = () => {
@@ -79,14 +79,14 @@ const Navbar = () => {
             <span className="ss-brand__logo">S</span>
             <span className="ss-brand__text">
               <strong>ShopSphere</strong>
-              <small>Premium Store</small>
+              <small>Repellent Store</small>
             </span>
           </Link>
 
           <form className="ss-search" onSubmit={handleSearch}>
             <input
               type="search"
-              placeholder="Search products, brands and offers"
+              placeholder="Search snake, solar, ultrasonic repellers..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               aria-label="Search products"
@@ -97,7 +97,7 @@ const Navbar = () => {
           <nav className="ss-actions">
             {isLoggedIn() ? (
               <div className="ss-user">
-                <span>Hello,</span>
+                <span>Hello</span>
                 <strong>{userName}</strong>
               </div>
             ) : (
@@ -141,7 +141,7 @@ const Navbar = () => {
         <div className="ss-nav-row">
           <div className="container ss-nav-row__inner">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} onClick={closeMenu}>
+              <NavLink key={item.label} to={item.to} onClick={closeMenu}>
                 {item.label}
               </NavLink>
             ))}
@@ -176,7 +176,7 @@ const Navbar = () => {
                 <Link to="/orders" onClick={closeMenu}>Orders</Link>
 
                 {navItems.map((item) => (
-                  <Link key={item.to} to={item.to} onClick={closeMenu}>
+                  <Link key={`${item.label}-mobile`} to={item.to} onClick={closeMenu}>
                     {item.label}
                   </Link>
                 ))}
