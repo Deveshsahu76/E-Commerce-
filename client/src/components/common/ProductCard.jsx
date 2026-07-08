@@ -1,15 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { addToCart } from "../../utils/cartUtils";
 import { calculateDiscount, formatPrice, getProductImage } from "../../utils/money";
 import { isInWishlist, toggleWishlist } from "../../utils/wishlistUtils";
-import { useEffect, useState } from "react";
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
+
   const productId = product?._id || product?.id;
   const discount = calculateDiscount(product);
   const originalPrice = Number(product?.originalPrice || product?.mrp || 0);
   const price = Number(product?.price || 0);
   const image = getProductImage(product);
+  const stock = Number(product?.stock || 0);
+  const rating = Number(product?.rating || 0);
+
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -20,30 +25,34 @@ const ProductCard = ({ product }) => {
     addToCart(product, 1);
   };
 
+  const handleBuyNow = () => {
+    addToCart(product, 1);
+    navigate("/checkout");
+  };
+
   const handleWishlist = () => {
     const result = toggleWishlist(product);
     setSaved(result.added);
   };
 
   return (
-    <article className="product-card">
-      <div className="product-card__image-wrap">
-        {discount > 0 && <span className="badge badge-discount">{discount}% OFF</span>}
-        {(product?.offerTitle || discount > 0) && (
-          <span className="badge badge-offer">Best Offer</span>
-        )}
+    <article className="market-card">
+      <div className="market-card__media">
+        {discount > 0 && <span className="market-badge">{discount}% off</span>}
+
         <button
           type="button"
-          className={`wishlist-button ${saved ? "active" : ""}`}
+          className={`market-wishlist ${saved ? "active" : ""}`}
           onClick={handleWishlist}
-          aria-label="Add to wishlist"
+          aria-label="Save product"
         >
           {saved ? "♥" : "♡"}
         </button>
-        <Link to={`/products/${productId}`} className="product-card__image-link">
+
+        <Link to={`/products/${productId}`}>
           <img
             src={image}
-            alt={product?.name || "Product image"}
+            alt={product?.name || "Product"}
             loading="lazy"
             onError={(event) => {
               event.currentTarget.src =
@@ -53,40 +62,48 @@ const ProductCard = ({ product }) => {
         </Link>
       </div>
 
-      <div className="product-card__body">
-        <div className="product-card__meta">
-          <span>{product?.brand || "Trusted Brand"}</span>
-          <span className={Number(product?.stock || 0) > 0 ? "stock in" : "stock out"}>
-            {Number(product?.stock || 0) > 0 ? "In stock" : "Out of stock"}
+      <div className="market-card__body">
+        <div className="market-card__brand">
+          <span>{product?.brand || "ShopSphere"}</span>
+          <span className={stock > 0 ? "market-stock in" : "market-stock out"}>
+            {stock > 0 ? "In stock" : "Out of stock"}
           </span>
         </div>
 
-        <Link to={`/products/${productId}`} className="product-card__title">
+        <Link className="market-card__title" to={`/products/${productId}`}>
           {product?.name || "Product"}
         </Link>
 
-        <div className="rating-line">
-          <span>★ {Number(product?.rating || 0).toFixed(1)}</span>
-          <small>{Number(product?.numReviews || 0)} reviews</small>
+        <div className="market-rating">
+          <span>{"★".repeat(Math.max(1, Math.round(rating || 4)))}</span>
+          <small>{rating ? rating.toFixed(1) : "4.0"}</small>
+          <small>({Number(product?.numReviews || 0)})</small>
         </div>
 
-        <div className="price-line">
+        <div className="market-price">
           <strong>{formatPrice(price)}</strong>
           {originalPrice > price && <del>{formatPrice(originalPrice)}</del>}
         </div>
 
-        <div className="product-card__actions">
+        <p className="market-delivery">Fast delivery available</p>
+
+        <div className="market-actions">
           <button
             type="button"
-            className="btn btn-primary btn-sm"
+            className="market-btn market-btn--cart"
             onClick={handleAddToCart}
-            disabled={Number(product?.stock || 0) <= 0}
+            disabled={stock <= 0}
           >
             Add to Cart
           </button>
-          <Link to={`/products/${productId}`} className="btn btn-ghost btn-sm">
-            View Details
-          </Link>
+          <button
+            type="button"
+            className="market-btn market-btn--buy"
+            onClick={handleBuyNow}
+            disabled={stock <= 0}
+          >
+            Buy Now
+          </button>
         </div>
       </div>
     </article>

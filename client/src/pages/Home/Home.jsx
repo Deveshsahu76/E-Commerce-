@@ -5,23 +5,25 @@ import LoadingGrid from "../../components/common/LoadingGrid";
 import { normalizeProductsResponse, storefrontApi } from "../../services/storefrontApi";
 import { calculateDiscount } from "../../utils/money";
 
-const ProductSection = ({ eyebrow, title, subtitle, products, to }) => {
+const ProductRail = ({ eyebrow, title, subtitle, products, to }) => {
   if (!products.length) return null;
 
   return (
-    <section className="home-section">
-      <div className="section-heading">
+    <section className="market-section">
+      <div className="market-section__head">
         <div>
-          <span className="eyebrow">{eyebrow}</span>
+          <span className="market-eyebrow">{eyebrow}</span>
           <h2>{title}</h2>
-          <p>{subtitle}</p>
+          {subtitle && <p>{subtitle}</p>}
         </div>
-        <Link to={to} className="text-link">View all →</Link>
+        <Link to={to}>See more →</Link>
       </div>
 
-      <div className="product-grid">
+      <div className="market-product-rail">
         {products.map((product) => (
-          <ProductCard product={product} key={product._id || product.id} />
+          <div className="market-product-rail__item" key={product._id || product.id}>
+            <ProductCard product={product} />
+          </div>
         ))}
       </div>
     </section>
@@ -37,7 +39,7 @@ const Home = () => {
 
     const loadProducts = async () => {
       try {
-        const response = await storefrontApi.getProducts({ page: 1, limit: 12 });
+        const response = await storefrontApi.getProducts({ page: 1, limit: 16 });
         const normalized = normalizeProductsResponse(response);
 
         if (mounted) {
@@ -58,108 +60,110 @@ const Home = () => {
 
   const featured = useMemo(() => {
     const items = products.filter((product) => product.isFeatured);
-    return (items.length ? items : products).slice(0, 4);
+    return (items.length ? items : products).slice(0, 8);
+  }, [products]);
+
+  const deals = useMemo(() => {
+    const items = products.filter((product) => calculateDiscount(product) > 0 || product.offerTitle);
+    return (items.length ? items : products).slice(0, 8);
   }, [products]);
 
   const latest = useMemo(() => {
     return [...products]
       .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-      .slice(0, 4);
+      .slice(0, 8);
   }, [products]);
 
   const bestSellers = useMemo(() => {
     return [...products]
       .sort((a, b) => Number(b.sold || 0) - Number(a.sold || 0))
-      .slice(0, 4);
-  }, [products]);
-
-  const offers = useMemo(() => {
-    return products.filter((product) => calculateDiscount(product) > 0 || product.offerTitle).slice(0, 4);
+      .slice(0, 8);
   }, [products]);
 
   return (
-    <div className="home-page">
-      <section className="hero">
-        <div className="container hero-grid">
-          <div className="hero-copy">
-            <span className="eyebrow">Trusted Store • Smooth Ordering</span>
-            <h1>Discover quality products at the best prices.</h1>
+    <div className="market-home">
+      <section className="market-hero">
+        <div className="container market-hero__grid">
+          <div className="market-hero__copy">
+            <span className="market-eyebrow">Secure Checkout • Fast Ordering • Best Offers</span>
+            <h1>Shop premium products with deals made for everyday buyers.</h1>
             <p>
-              Shop trusted products with secure checkout, smooth ordering, and exciting offers.
+              Discover quality products, compare prices quickly, add to cart smoothly,
+              and checkout with trusted payment options.
             </p>
-            <div className="hero-actions">
-              <Link className="btn btn-primary" to="/products">Shop Now</Link>
-              <Link className="btn btn-ghost" to="/offers">View Offers</Link>
+
+            <div className="market-hero__actions">
+              <Link className="market-cta market-cta--primary" to="/products">Shop Now</Link>
+              <Link className="market-cta market-cta--secondary" to="/offers">Explore Deals</Link>
             </div>
 
-            <div className="hero-stats">
+            <div className="market-hero__mini">
               <div>
                 <strong>Secure</strong>
-                <span>Checkout</span>
+                <span>Payments</span>
               </div>
               <div>
                 <strong>Fast</strong>
-                <span>Ordering</span>
+                <span>Delivery Support</span>
               </div>
               <div>
                 <strong>Easy</strong>
-                <span>Support</span>
+                <span>Returns Help</span>
               </div>
             </div>
           </div>
 
-          <div className="hero-visual">
-            <div className="hero-main-card">
-              <img
-                src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80"
-                alt="Premium online shopping"
-              />
-              <div className="hero-offer-card">
-                <span>Special Offers</span>
-                <strong>Available on selected products</strong>
-              </div>
+          <div className="market-hero__visual">
+            <img
+              src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1400&q=85"
+              alt="Premium shopping experience"
+            />
+            <div className="market-floating-deal">
+              <span>Today’s Deal</span>
+              <strong>Special prices on selected products</strong>
+              <Link to="/offers">View deals</Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="trust-strip">
-        <div className="container trust-grid">
+      <section className="market-benefits">
+        <div className="container market-benefits__grid">
           <div>
             <strong>Secure Checkout</strong>
-            <span>Safe online payment options</span>
+            <span>Pay with trusted payment options</span>
+          </div>
+          <div>
+            <strong>Fast Ordering</strong>
+            <span>Quick cart and checkout flow</span>
           </div>
           <div>
             <strong>Quality Products</strong>
-            <span>Carefully listed items</span>
+            <span>Clear product details and pricing</span>
           </div>
           <div>
-            <strong>Fast Support</strong>
-            <span>Helpful customer assistance</span>
-          </div>
-          <div>
-            <strong>Easy Returns</strong>
-            <span>Simple support process</span>
+            <strong>Customer Support</strong>
+            <span>Help for orders, returns and payments</span>
           </div>
         </div>
       </section>
 
-      <section className="container offer-banner">
+      <section className="container market-deal-banner">
         <div>
-          <span className="eyebrow">Limited Time</span>
-          <h2>Special offers available on selected products</h2>
-          <p>Browse the latest deals and choose products that match your needs.</p>
+          <span className="market-eyebrow">Deal Zone</span>
+          <h2>Today’s Deals are ready for your customers.</h2>
+          <p>Highlight offers, fast-moving products, and best-value items in one premium section.</p>
         </div>
-        <Link className="btn btn-light" to="/offers">Explore Offers</Link>
+        <Link className="market-cta market-cta--light" to="/offers">Shop Deals</Link>
       </section>
 
       <div className="container">
         {status === "loading" && (
-          <section className="home-section">
-            <div className="section-heading">
+          <section className="market-section">
+            <div className="market-section__head">
               <div>
-                <span className="eyebrow">Featured Products</span>
-                <h2>Products customers love</h2>
+                <span className="market-eyebrow">Loading Products</span>
+                <h2>Finding the best products for you</h2>
               </div>
             </div>
             <LoadingGrid count={4} />
@@ -167,7 +171,7 @@ const Home = () => {
         )}
 
         {status === "error" && (
-          <div className="state-card">
+          <div className="market-state">
             <h2>Products are taking longer to load</h2>
             <p>Please refresh the page in a few seconds.</p>
           </div>
@@ -175,78 +179,65 @@ const Home = () => {
 
         {status === "success" && (
           <>
-            <ProductSection
+            <ProductRail
+              eyebrow="Today's Deals"
+              title="Fresh deals for quick shopping"
+              subtitle="A marketplace-style row for high-converting offers."
+              products={deals}
+              to="/offers"
+            />
+
+            <ProductRail
               eyebrow="Featured Products"
-              title="Products customers love"
-              subtitle="Explore handpicked products from the store."
+              title="Recommended for customers"
+              subtitle="Selected products to help customers start shopping."
               products={featured}
               to="/products"
             />
 
-            <ProductSection
-              eyebrow="Latest Products"
-              title="Fresh arrivals for you"
-              subtitle="Newly listed products ready to explore."
+            <ProductRail
+              eyebrow="New Arrivals"
+              title="Recently added products"
+              subtitle="Keep returning visitors engaged with fresh product listings."
               products={latest}
               to="/new-arrivals"
             />
 
-            <ProductSection
+            <ProductRail
               eyebrow="Best Sellers"
-              title="Popular picks"
-              subtitle="Products customers are choosing often."
+              title="Popular picks from the store"
+              subtitle="Show products customers are choosing often."
               products={bestSellers}
               to="/best-sellers"
-            />
-
-            <ProductSection
-              eyebrow="Best Offers"
-              title="Deals worth checking"
-              subtitle="Save more on selected products."
-              products={offers}
-              to="/offers"
             />
           </>
         )}
       </div>
 
-      <section className="why-section">
-        <div className="container why-grid">
+      <section className="market-support-strip">
+        <div className="container market-support-strip__grid">
           <div>
-            <span className="eyebrow">Why Shop With Us</span>
-            <h2>Everything customers need for a smooth shopping experience.</h2>
-            <p>
-              From product discovery to checkout and order support, the store is built
-              to keep shopping simple, clear, and reliable.
-            </p>
+            <span className="market-eyebrow">Need help?</span>
+            <h2>Customer support for orders, payments and delivery.</h2>
+            <p>Guide customers to get help quickly without leaving the shopping flow.</p>
           </div>
-          <div className="why-cards">
-            <article>
-              <strong>Simple browsing</strong>
-              <span>Find products quickly with clean listing and search.</span>
-            </article>
-            <article>
-              <strong>Clear pricing</strong>
-              <span>Product pricing and offers stay easy to understand.</span>
-            </article>
-            <article>
-              <strong>Order support</strong>
-              <span>Customers can track orders and get help when needed.</span>
-            </article>
+          <div className="market-support-actions">
+            <Link className="market-cta market-cta--primary" to="/support">Customer Support</Link>
+            <Link className="market-cta market-cta--secondary" to="/track-order">Track Order</Link>
           </div>
         </div>
       </section>
 
-      <section className="newsletter-section">
-        <div className="container newsletter-card">
+      <section className="market-newsletter">
+        <div className="container market-newsletter__card">
           <div>
-            <span className="eyebrow">Stay Updated</span>
+            <span className="market-eyebrow">Stay Updated</span>
             <h2>Get updates about new products and special offers.</h2>
-            <p>Join the store updates list and never miss new arrivals.</p>
+            <p>Use this section later for customer retention and campaigns.</p>
           </div>
           <form onSubmit={(event) => event.preventDefault()}>
             <input type="email" placeholder="Enter your email" aria-label="Email" />
-            <button className="btn btn-primary" type="submit">Subscribe</button>
+            <button type="submit">Subscribe</button>
           </form>
         </div>
       </section>
