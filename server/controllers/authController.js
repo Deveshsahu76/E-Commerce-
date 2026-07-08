@@ -1,23 +1,3 @@
-cd D:\E-Commerce
-
-function Write-Utf8NoBomFile {
-  param (
-    [string]$Path,
-    [string]$Content
-  )
-
-  $fullPath = Join-Path "D:\E-Commerce" $Path
-  $directory = Split-Path $fullPath -Parent
-
-  if (!(Test-Path $directory)) {
-    New-Item -ItemType Directory -Force -Path $directory | Out-Null
-  }
-
-  $utf8NoBom = New-Object System.Text.UTF8Encoding $false
-  [System.IO.File]::WriteAllText($fullPath, $Content, $utf8NoBom)
-}
-
-Write-Utf8NoBomFile "server/controllers/authController.js" @'
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
@@ -326,4 +306,3 @@ module.exports = {
   forgotPassword,
   resetPassword,
 };
-'@
