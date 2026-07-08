@@ -15,22 +15,10 @@ export const storefrontContent = {
   },
 
   categories: [
-    {
-      label: "Snake Repellers",
-      keyword: "snake",
-    },
-    {
-      label: "Solar Repellers",
-      keyword: "solar",
-    },
-    {
-      label: "Ultrasonic Devices",
-      keyword: "ultrasonic",
-    },
-    {
-      label: "Rodent Control",
-      keyword: "rodent",
-    },
+    "Snake Repellers",
+    "Solar Repellers",
+    "Ultrasonic Devices",
+    "Rodent Control",
   ],
 
   trustCards: [

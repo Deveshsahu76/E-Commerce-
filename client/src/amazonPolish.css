@@ -377,3 +377,27 @@ a {
     grid-template-columns: 1fr;
   }
 }
+.safe-category-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.safe-category-list a {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e5eee2;
+  border-radius: 14px;
+  padding: 0 14px;
+  background: #ffffff;
+  color: #14213d;
+  font-weight: 900;
+}
+
+.safe-category-list a::after {
+  content: "?";
+  color: #1f7a4d;
+}
+
