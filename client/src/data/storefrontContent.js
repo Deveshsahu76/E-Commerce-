@@ -1,84 +1,52 @@
 export const storefrontContent = {
   hero: {
-    eyebrow: "Trusted Store • Smooth Checkout • Better Deals",
-    title: "Discover products your customers will love to buy.",
+    eyebrow: "Premium Store • Fast Shopping • Trusted Checkout",
+    title: "Shop smart with a clean, modern shopping experience.",
     subtitle:
-      "Create a clean shopping experience with premium presentation, curated products, trusted support, and a fast checkout flow.",
+      "Explore quality products, smooth search, quick cart actions, and a simple checkout flow designed for real customers.",
     primaryCta: {
-      label: "Shop Products",
+      label: "Start Shopping",
       link: "/products",
     },
     secondaryCta: {
-      label: "View Offers",
+      label: "Explore Offers",
       link: "/offers",
     },
-    image:
-      "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1400&q=80",
   },
 
   heroPromo: {
     enabled: false,
-    badge: "Limited Time",
-    title: "Special store-wide offer",
-    description:
-      "Enable this section later from admin-controlled storefront settings.",
-    ctaLabel: "Explore Offers",
+    badge: "Special Offer",
+    title: "Limited-time offer is live",
+    description: "This promo can be connected with admin controls later.",
+    ctaLabel: "View Offer",
     ctaLink: "/offers",
   },
 
-  topHighlights: [
-    {
-      title: "Premium Product Display",
-      description: "Present products clearly with clean cards and fast browsing.",
-    },
-    {
-      title: "Smart Shopping Experience",
-      description: "Search, compare, and order products in a smooth flow.",
-    },
-    {
-      title: "Trusted Support",
-      description: "Offer helpful order, delivery, and return assistance.",
-    },
+  categories: [
+    "Electronics",
+    "Fashion",
+    "Home",
+    "Accessories",
+    "Daily Picks",
   ],
 
   trustCards: [
     {
       title: "Secure Checkout",
-      description: "Trusted payment options with a smooth checkout experience.",
+      description: "Smooth and trusted payment experience.",
     },
     {
-      title: "Quality Products",
-      description: "Well-presented products with clear pricing and details.",
+      title: "Quick Ordering",
+      description: "Add products to cart and checkout faster.",
     },
     {
-      title: "Fast Ordering",
-      description: "Quick add-to-cart flow and simple checkout journey.",
+      title: "Quality Listings",
+      description: "Clear product images, prices, and details.",
     },
     {
-      title: "Customer Support",
-      description: "Help customers with orders, delivery updates, and returns.",
+      title: "Order Support",
+      description: "Helpful support for orders and delivery.",
     },
   ],
-
-  supportingStrip: {
-    title: "Build a store experience people trust.",
-    description:
-      "Strong product presentation, useful navigation, and clean design help customers shop with confidence.",
-    primaryCta: {
-      label: "Customer Support",
-      link: "/support",
-    },
-    secondaryCta: {
-      label: "Track Order",
-      link: "/track-order",
-    },
-  },
-
-  newsletter: {
-    title: "Stay updated with new arrivals and exclusive offers",
-    description:
-      "Keep this section ready for future email marketing and customer retention.",
-    placeholder: "Enter your email address",
-    buttonText: "Subscribe",
-  },
 };

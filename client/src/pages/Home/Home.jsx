@@ -10,22 +10,19 @@ const ProductRail = ({ eyebrow, title, subtitle, products, to }) => {
   if (!products.length) return null;
 
   return (
-    <section className="home-section">
-      <div className="home-section__head">
+    <section className="ss-section">
+      <div className="ss-section__head">
         <div>
-          <span className="home-eyebrow">{eyebrow}</span>
+          <span>{eyebrow}</span>
           <h2>{title}</h2>
           {subtitle ? <p>{subtitle}</p> : null}
         </div>
-
-        <Link to={to} className="home-section__link">
-          View More →
-        </Link>
+        <Link to={to}>View all</Link>
       </div>
 
-      <div className="home-product-rail">
+      <div className="ss-product-rail">
         {products.map((product) => (
-          <div className="home-product-rail__item" key={product._id || product.id}>
+          <div className="ss-product-rail__item" key={product._id || product.id}>
             <ProductCard product={product} />
           </div>
         ))}
@@ -41,7 +38,7 @@ const Home = () => {
   useEffect(() => {
     let mounted = true;
 
-    const fetchProducts = async () => {
+    const loadProducts = async () => {
       try {
         const response = await storefrontApi.getProducts({ page: 1, limit: 18 });
         const normalized = normalizeProductsResponse(response);
@@ -50,87 +47,75 @@ const Home = () => {
           setProducts(normalized.products || []);
           setStatus("success");
         }
-      } catch (error) {
-        if (mounted) {
-          setStatus("error");
-        }
+      } catch {
+        if (mounted) setStatus("error");
       }
     };
 
-    fetchProducts();
+    loadProducts();
 
     return () => {
       mounted = false;
     };
   }, []);
 
-  const featuredProducts = useMemo(() => {
-    const featured = products.filter((product) => product.isFeatured);
-    return (featured.length ? featured : products).slice(0, 8);
+  const featured = useMemo(() => {
+    const items = products.filter((product) => product.isFeatured);
+    return (items.length ? items : products).slice(0, 8);
   }, [products]);
 
-  const latestProducts = useMemo(() => {
+  const deals = useMemo(() => {
+    return products
+      .filter((product) => calculateDiscount(product) > 0 || product.offerTitle)
+      .slice(0, 8);
+  }, [products]);
+
+  const latest = useMemo(() => {
     return [...products]
       .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
       .slice(0, 8);
   }, [products]);
 
-  const bestSellerProducts = useMemo(() => {
+  const bestSellers = useMemo(() => {
     return [...products]
       .sort((a, b) => Number(b.sold || 0) - Number(a.sold || 0))
       .slice(0, 8);
   }, [products]);
 
-  const offerProducts = useMemo(() => {
-    const discounted = products.filter(
-      (product) => calculateDiscount(product) > 0 || product.offerTitle
-    );
-    return discounted.slice(0, 8);
-  }, [products]);
-
   return (
-    <div className="store-home">
-      <section className="store-hero">
-        <div className="container store-hero__grid">
-          <div className="store-hero__content">
-            <span className="home-eyebrow">{storefrontContent.hero.eyebrow}</span>
+    <main className="ss-home">
+      <section className="ss-hero">
+        <div className="container ss-hero__grid">
+          <div className="ss-hero__content">
+            <span className="ss-eyebrow">{storefrontContent.hero.eyebrow}</span>
             <h1>{storefrontContent.hero.title}</h1>
             <p>{storefrontContent.hero.subtitle}</p>
 
-            <div className="store-hero__actions">
-              <Link
-                to={storefrontContent.hero.primaryCta.link}
-                className="store-btn store-btn--primary"
-              >
+            <div className="ss-hero__actions">
+              <Link className="ss-btn ss-btn--primary" to={storefrontContent.hero.primaryCta.link}>
                 {storefrontContent.hero.primaryCta.label}
               </Link>
-
-              <Link
-                to={storefrontContent.hero.secondaryCta.link}
-                className="store-btn store-btn--secondary"
-              >
+              <Link className="ss-btn ss-btn--light" to={storefrontContent.hero.secondaryCta.link}>
                 {storefrontContent.hero.secondaryCta.label}
               </Link>
             </div>
-
-            <div className="store-hero__highlights">
-              {storefrontContent.topHighlights.map((item) => (
-                <div key={item.title} className="store-hero__highlight">
-                  <strong>{item.title}</strong>
-                  <span>{item.description}</span>
-                </div>
-              ))}
-            </div>
           </div>
 
-          <div className="store-hero__visual">
-            <img
-              src={storefrontContent.hero.image}
-              alt="Premium shopping experience"
-            />
+          <div className="ss-hero__visual">
+            <div className="ss-visual-card ss-visual-card--main">
+              <span>Premium Picks</span>
+              <strong>Curated products for everyday shopping</strong>
+              <p>Clean listings, smooth cart flow, and trusted checkout.</p>
+            </div>
+
+            <div className="ss-category-cloud">
+              {storefrontContent.categories.map((category) => (
+                <Link to="/products" key={category}>{category}</Link>
+              ))}
+            </div>
 
             {storefrontContent.heroPromo.enabled ? (
-              <div className="store-hero__promo">
+              <div className="ss-promo-card">
                 <span>{storefrontContent.heroPromo.badge}</span>
                 <strong>{storefrontContent.heroPromo.title}</strong>
                 <p>{storefrontContent.heroPromo.description}</p>
@@ -143,10 +128,10 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="store-trust-grid">
-        <div className="container store-trust-grid__inner">
+      <section className="ss-trust">
+        <div className="container ss-trust__grid">
           {storefrontContent.trustCards.map((item) => (
-            <div key={item.title} className="store-trust-card">
+            <div className="ss-trust-card" key={item.title}>
               <strong>{item.title}</strong>
               <p>{item.description}</p>
             </div>
@@ -154,27 +139,22 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="container store-feature-banner">
+      <section className="container ss-feature-strip">
         <div>
-          <span className="home-eyebrow">Storefront Experience</span>
-          <h2>Showcase products in a clean and customer-friendly way.</h2>
-          <p>
-            Keep the homepage modern, easy to browse, and focused on conversions.
-          </p>
+          <span className="ss-eyebrow">Storefront Experience</span>
+          <h2>Designed to make shopping simple, clean and trustworthy.</h2>
+          <p>Customers can browse products, compare details, add to cart and checkout without confusion.</p>
         </div>
-
-        <Link to="/products" className="store-btn store-btn--secondary">
-          Browse Store
-        </Link>
+        <Link className="ss-btn ss-btn--primary" to="/products">Browse Store</Link>
       </section>
 
       <div className="container">
         {status === "loading" ? (
-          <section className="home-section">
-            <div className="home-section__head">
+          <section className="ss-section">
+            <div className="ss-section__head">
               <div>
-                <span className="home-eyebrow">Loading Products</span>
-                <h2>Fetching products for your storefront</h2>
+                <span>Loading Products</span>
+                <h2>Preparing your storefront</h2>
               </div>
             </div>
             <LoadingGrid count={4} />
@@ -182,98 +162,66 @@ const Home = () => {
         ) : null}
 
         {status === "error" ? (
-          <div className="store-empty-state">
-            <h2>Products are taking a little longer to load</h2>
-            <p>Please refresh the page after a few seconds.</p>
+          <div className="ss-empty">
+            <h2>Products are taking longer to load</h2>
+            <p>Please refresh after a few seconds.</p>
           </div>
         ) : null}
 
         {status === "success" ? (
           <>
-            {offerProducts.length > 0 ? (
+            {deals.length > 0 ? (
               <ProductRail
                 eyebrow="Today’s Picks"
-                title="Special selections for quick shopping"
-                subtitle="Promoted products and highlighted offers can appear here when available."
-                products={offerProducts}
+                title="Special selections"
+                subtitle="Offer products can appear here when admin enables promotions later."
+                products={deals}
                 to="/offers"
               />
             ) : null}
 
             <ProductRail
               eyebrow="Featured Products"
-              title="Products worth highlighting"
-              subtitle="Show important or promoted products with a premium presentation."
-              products={featuredProducts}
+              title="Products worth exploring"
+              subtitle="Highlight your best products in a clean premium layout."
+              products={featured}
               to="/products"
             />
 
             <ProductRail
               eyebrow="New Arrivals"
               title="Recently added products"
-              subtitle="Help customers discover what’s new in the store."
-              products={latestProducts}
+              subtitle="Keep customers updated with fresh products."
+              products={latest}
               to="/new-arrivals"
             />
 
             <ProductRail
               eyebrow="Best Sellers"
-              title="Products customers love"
-              subtitle="Use popular products to build trust and improve conversions."
-              products={bestSellerProducts}
+              title="Popular products"
+              subtitle="Build trust with products customers prefer."
+              products={bestSellers}
               to="/best-sellers"
             />
           </>
         ) : null}
       </div>
 
-      <section className="store-support-strip">
-        <div className="container store-support-strip__inner">
+      <section className="ss-support">
+        <div className="container ss-support__card">
           <div>
-            <span className="home-eyebrow">Store Promise</span>
-            <h2>{storefrontContent.supportingStrip.title}</h2>
-            <p>{storefrontContent.supportingStrip.description}</p>
+            <span className="ss-eyebrow">Customer Care</span>
+            <h2>Support for orders, delivery and product help.</h2>
+            <p>A clean support section makes the store feel reliable and customer-friendly.</p>
           </div>
 
-          <div className="store-support-strip__actions">
-            <Link
-              to={storefrontContent.supportingStrip.primaryCta.link}
-              className="store-btn store-btn--primary"
-            >
-              {storefrontContent.supportingStrip.primaryCta.label}
-            </Link>
-
-            <Link
-              to={storefrontContent.supportingStrip.secondaryCta.link}
-              className="store-btn store-btn--secondary"
-            >
-              {storefrontContent.supportingStrip.secondaryCta.label}
-            </Link>
+          <div className="ss-support__actions">
+            <Link className="ss-btn ss-btn--primary" to="/support">Get Support</Link>
+            <Link className="ss-btn ss-btn--light" to="/track-order">Track Order</Link>
           </div>
         </div>
       </section>
-
-      <section className="store-newsletter">
-        <div className="container store-newsletter__card">
-          <div>
-            <span className="home-eyebrow">Newsletter</span>
-            <h2>{storefrontContent.newsletter.title}</h2>
-            <p>{storefrontContent.newsletter.description}</p>
-          </div>
-
-          <form onSubmit={(event) => event.preventDefault()}>
-            <input
-              type="email"
-              placeholder={storefrontContent.newsletter.placeholder}
-              aria-label="Email address"
-            />
-            <button type="submit">
-              {storefrontContent.newsletter.buttonText}
-            </button>
-          </form>
-        </div>
-      </section>
-    </div>
+    </main>
   );
 };
 

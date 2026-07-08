@@ -3,14 +3,23 @@ import { useEffect, useMemo, useState } from "react";
 import { getCartCount } from "../../utils/cartUtils";
 import { getUser, isLoggedIn, logout } from "../../utils/authUtils";
 
-const Navbar = () => {
-  const [open, setOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(getCartCount());
-  const [user, setUser] = useState(getUser());
-  const [search, setSearch] = useState("");
+const navItems = [
+  { label: "Products", to: "/products" },
+  { label: "Offers", to: "/offers" },
+  { label: "New Arrivals", to: "/new-arrivals" },
+  { label: "Best Sellers", to: "/best-sellers" },
+  { label: "Support", to: "/support" },
+  { label: "Track Order", to: "/track-order" },
+];
 
+const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [cartCount, setCartCount] = useState(getCartCount());
+  const [user, setUser] = useState(getUser());
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -36,126 +45,153 @@ const Navbar = () => {
 
   const userName = useMemo(() => {
     const name = user?.name || user?.username || "";
-    if (!name) return "Account";
-    return name.split(" ")[0];
+    return name ? name.split(" ")[0] : "Account";
   }, [user]);
 
-  const closeMenu = () => setOpen(false);
+  const closeMenu = () => setMenuOpen(false);
 
   const handleSearch = (event) => {
     event.preventDefault();
 
-    const query = search.trim();
+    const value = search.trim();
     closeMenu();
 
-    if (!query) {
+    if (!value) {
       navigate("/products");
       return;
     }
 
-    navigate(`/products?keyword=${encodeURIComponent(query)}`);
+    navigate(`/products?keyword=${encodeURIComponent(value)}`);
   };
 
   const handleLogout = () => {
     logout();
+    window.dispatchEvent(new Event("auth:updated"));
     closeMenu();
     navigate("/");
   };
 
   return (
     <>
-      <header className="commerce-header">
-        <div className="commerce-header__main">
-          <div className="container commerce-header__inner">
-            <Link className="commerce-brand" to="/" onClick={closeMenu}>
-              <span className="commerce-brand__mark">S</span>
-              <span>
-                <strong>ShopSphere</strong>
-                <small>Premium Store</small>
-              </span>
+      <header className="ss-header">
+        <div className="container ss-header__inner">
+          <Link to="/" className="ss-brand" onClick={closeMenu}>
+            <span className="ss-brand__logo">S</span>
+            <span className="ss-brand__text">
+              <strong>ShopSphere</strong>
+              <small>Premium Store</small>
+            </span>
+          </Link>
+
+          <form className="ss-search" onSubmit={handleSearch}>
+            <input
+              type="search"
+              placeholder="Search products, brands and offers"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              aria-label="Search products"
+            />
+            <button type="submit">Search</button>
+          </form>
+
+          <nav className="ss-actions">
+            {isLoggedIn() ? (
+              <div className="ss-user">
+                <span>Hello,</span>
+                <strong>{userName}</strong>
+              </div>
+            ) : (
+              <Link to="/login" className="ss-action-link">
+                <span>Account</span>
+                <strong>Login</strong>
+              </Link>
+            )}
+
+            <Link to="/orders" className="ss-action-link">
+              <span>Your</span>
+              <strong>Orders</strong>
             </Link>
 
-            <form className="commerce-search" onSubmit={handleSearch}>
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search products, brands and offers"
-                aria-label="Search products"
-              />
-              <button type="submit">Search</button>
-            </form>
+            <Link to="/cart" className="ss-cart">
+              <span>{cartCount}</span>
+              <strong>Cart</strong>
+            </Link>
 
-            <button
-              type="button"
-              className="commerce-menu-btn"
-              onClick={() => setOpen((value) => !value)}
-              aria-label="Open menu"
-            >
-              ☰
-            </button>
-
-            <div className={`commerce-actions ${open ? "show" : ""}`}>
-              {isLoggedIn() ? (
-                <div className="commerce-account">
-                  <span>Hello, {userName}</span>
-                  <button type="button" onClick={handleLogout}>Logout</button>
-                </div>
-              ) : (
-                <div className="commerce-auth">
-                  <Link to="/login" onClick={closeMenu}>
-                    <span>Hello, sign in</span>
-                    <strong>Account</strong>
-                  </Link>
-                  <Link className="commerce-register" to="/register" onClick={closeMenu}>
-                    Register
-                  </Link>
-                </div>
-              )}
-
-              <Link className="commerce-action-link" to="/orders" onClick={closeMenu}>
-                <span>Returns</span>
-                <strong>& Orders</strong>
+            {!isLoggedIn() ? (
+              <Link to="/register" className="ss-register">
+                Register
               </Link>
+            ) : (
+              <button type="button" className="ss-logout" onClick={handleLogout}>
+                Logout
+              </button>
+            )}
+          </nav>
 
-              <Link className="commerce-cart" to="/cart" onClick={closeMenu}>
-                <span className="commerce-cart__count">{cartCount}</span>
-                <strong>Cart</strong>
-              </Link>
-            </div>
-          </div>
+          <button
+            type="button"
+            className="ss-menu-btn"
+            onClick={() => setMenuOpen((value) => !value)}
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+        </div>
 
-          <div className={`commerce-mobile-search ${open ? "show" : ""}`}>
-            <form className="commerce-search" onSubmit={handleSearch}>
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search products"
-                aria-label="Search products"
-              />
-              <button type="submit">Search</button>
-            </form>
+        <div className="ss-nav-row">
+          <div className="container ss-nav-row__inner">
+            {navItems.map((item) => (
+              <NavLink key={item.to} to={item.to} onClick={closeMenu}>
+                {item.label}
+              </NavLink>
+            ))}
           </div>
         </div>
 
-        <nav className="commerce-subnav">
-          <div className="container commerce-subnav__inner">
-            <NavLink to="/products" onClick={closeMenu}>All Products</NavLink>
-            <NavLink to="/offers" onClick={closeMenu}>Today's Deals</NavLink>
-            <NavLink to="/offers" onClick={closeMenu}>Offers</NavLink>
-            <NavLink to="/new-arrivals" onClick={closeMenu}>New Arrivals</NavLink>
-            <NavLink to="/best-sellers" onClick={closeMenu}>Best Sellers</NavLink>
-            <NavLink to="/support" onClick={closeMenu}>Customer Support</NavLink>
-            <NavLink to="/track-order" onClick={closeMenu}>Track Order</NavLink>
+        {menuOpen ? (
+          <div className="ss-mobile-panel">
+            <div className="container">
+              <form className="ss-search ss-search--mobile" onSubmit={handleSearch}>
+                <input
+                  type="search"
+                  placeholder="Search products"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  aria-label="Search products"
+                />
+                <button type="submit">Search</button>
+              </form>
+
+              <div className="ss-mobile-links">
+                {!isLoggedIn() ? (
+                  <>
+                    <Link to="/login" onClick={closeMenu}>Login</Link>
+                    <Link to="/register" onClick={closeMenu}>Register</Link>
+                  </>
+                ) : (
+                  <button type="button" onClick={handleLogout}>Logout</button>
+                )}
+
+                <Link to="/cart" onClick={closeMenu}>Cart ({cartCount})</Link>
+                <Link to="/orders" onClick={closeMenu}>Orders</Link>
+
+                {navItems.map((item) => (
+                  <Link key={item.to} to={item.to} onClick={closeMenu}>
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
-        </nav>
+        ) : null}
       </header>
 
-      <nav className="bottom-quick-nav">
-        <NavLink to="/">⌂<span>Home</span></NavLink>
-        <NavLink to="/products">⌕<span>Products</span></NavLink>
-        <NavLink to="/cart">🛒<span>Cart</span></NavLink>
-        <NavLink to="/orders">▣<span>Orders</span></NavLink>
-        <NavLink to={isLoggedIn() ? "/orders" : "/login"}>👤<span>Account</span></NavLink>
+      <nav className="ss-bottom-nav">
+        <NavLink to="/"><span>Home</span></NavLink>
+        <NavLink to="/products"><span>Products</span></NavLink>
+        <NavLink to="/cart"><span>Cart</span></NavLink>
+        <NavLink to="/orders"><span>Orders</span></NavLink>
+        <NavLink to={isLoggedIn() ? "/orders" : "/login"}><span>Account</span></NavLink>
       </nav>
     </>
   );
