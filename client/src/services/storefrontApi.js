@@ -17,29 +17,42 @@ const buildQuery = (params = {}) => {
 
 const request = async (path, options = {}) => {
   const token = getToken();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
+      },
+    });
 
-  const contentType = response.headers.get("content-type");
-  const data = contentType && contentType.includes("application/json")
-    ? await response.json()
-    : await response.text();
+    const contentType = response.headers.get("content-type");
+    const data = contentType && contentType.includes("application/json")
+      ? await response.json()
+      : await response.text();
 
-  if (!response.ok) {
-    const message = typeof data === "string"
-      ? data
-      : data?.message || data?.error || "Something went wrong";
-    throw new Error(message);
+    if (!response.ok) {
+      const message = typeof data === "string"
+        ? data
+        : data?.message || data?.error || "Something went wrong";
+      throw new Error(message);
+    }
+
+    return data;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("Request is taking too long. Please check your connection or try again.");
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return data;
 };
 
 export const storefrontApi = {

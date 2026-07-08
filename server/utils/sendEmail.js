@@ -11,7 +11,7 @@ const getTransporter = () => {
   const pass = process.env.SMTP_PASS;
 
   if (!host || !user || !pass) {
-    return null;
+    throw new Error("Email service is not configured. Please add SMTP environment variables.");
   }
 
   cachedTransporter = nodemailer.createTransport({
@@ -22,6 +22,9 @@ const getTransporter = () => {
       user,
       pass,
     },
+    connectionTimeout: 15000,
+    greetingTimeout: 10000,
+    socketTimeout: 20000,
   });
 
   return cachedTransporter;
@@ -29,11 +32,6 @@ const getTransporter = () => {
 
 const sendEmail = async ({ to, subject, text, html }) => {
   const transporter = getTransporter();
-
-  if (!transporter) {
-    console.warn("SMTP is not configured. Email was not sent.");
-    return false;
-  }
 
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
 
