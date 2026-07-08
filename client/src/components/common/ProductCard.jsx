@@ -1,26 +1,39 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { addToCart } from "../../utils/cartUtils";
-import { calculateDiscount, formatPrice, getProductImage } from "../../utils/money";
-import { isInWishlist, toggleWishlist } from "../../utils/wishlistUtils";
 
-const ProductCard = ({ product }) => {
+const formatPrice = (value = 0) => {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
+};
+
+const getImage = (product = {}) => {
+  if (Array.isArray(product.images) && product.images.length) {
+    const first = product.images[0];
+    if (typeof first === "string") return first;
+    if (first?.url) return first.url;
+  }
+
+  if (product.image) return product.image;
+  if (product.imageUrl) return product.imageUrl;
+
+  return "https://placehold.co/700x700/f7faf5/1f7a4d?text=Repellent+Product";
+};
+
+const ProductCard = ({ product = {} }) => {
   const navigate = useNavigate();
 
-  const productId = product?._id || product?.id;
-  const discount = calculateDiscount(product || {});
-  const image = getProductImage(product || {});
-  const price = Number(product?.price || 0);
-  const originalPrice = Number(product?.originalPrice || product?.mrp || 0);
-  const stock = Number(product?.stock || 0);
-  const rating = Number(product?.rating || 4);
-  const description = product?.shortDescription || product?.description || "";
-
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    setSaved(isInWishlist(productId));
-  }, [productId]);
+  const id = product._id || product.id;
+  const name = product.name || "Repellent Product";
+  const price = Number(product.price || 0);
+  const originalPrice = Number(product.originalPrice || product.mrp || 0);
+  const stock = Number(product.stock || 0);
+  const description =
+    product.shortDescription ||
+    product.description ||
+    "Outdoor protection product for home, garden and farm use.";
 
   const handleAddToCart = () => {
     addToCart(product, 1);
@@ -31,84 +44,44 @@ const ProductCard = ({ product }) => {
     navigate("/checkout");
   };
 
-  const handleWishlist = () => {
-    const result = toggleWishlist(product);
-    setSaved(result.added);
-  };
-
   return (
-    <article className="ss-product-card">
-      <div className="ss-product-card__image">
-        {discount > 0 ? <span className="ss-discount">{discount}% off</span> : null}
+    <article className="rep-product-card">
+      <Link to={`/products/${id}`} className="rep-product-card__image">
+        <img
+          src={getImage(product)}
+          alt={name}
+          loading="lazy"
+          onError={(event) => {
+            event.currentTarget.src =
+              "https://placehold.co/700x700/f7faf5/1f7a4d?text=Repellent+Product";
+          }}
+        />
+      </Link>
 
-        <button
-          type="button"
-          className={`ss-wishlist ${saved ? "active" : ""}`}
-          onClick={handleWishlist}
-          aria-label="Save product"
-        >
-          {saved ? "♥" : "♡"}
-        </button>
-
-        <Link to={`/products/${productId}`}>
-          <img
-            src={image}
-            alt={product?.name || "Product"}
-            loading="lazy"
-            onError={(event) => {
-              event.currentTarget.src =
-                "https://placehold.co/600x600/f5f7f2/1f4d2b?text=ShopSphere";
-            }}
-          />
-        </Link>
-      </div>
-
-      <div className="ss-product-card__body">
-        <div className="ss-product-card__meta">
-          <span>{product?.brand || "Protection Device"}</span>
+      <div className="rep-product-card__body">
+        <div className="rep-product-card__meta">
+          <span>{product.category || "Repellent Product"}</span>
           <small className={stock > 0 ? "in" : "out"}>
-            {stock > 0 ? "In stock" : "Out of stock"}
+            {stock > 0 ? "In Stock" : "Out of Stock"}
           </small>
         </div>
 
-        <Link className="ss-product-card__title" to={`/products/${productId}`}>
-          {product?.name || "Product"}
+        <Link to={`/products/${id}`} className="rep-product-card__title">
+          {name}
         </Link>
 
-        {description ? (
-          <p className="ss-product-card__desc">
-            {description}
-          </p>
-        ) : null}
+        <p className="rep-product-card__desc">{description}</p>
 
-        <div className="ss-product-rating">
-          <span>{"★".repeat(Math.max(1, Math.min(5, Math.round(rating))))}</span>
-          <small>{rating.toFixed(1)}</small>
-        </div>
-
-        <div className="ss-product-price">
+        <div className="rep-product-card__price">
           <strong>{formatPrice(price)}</strong>
           {originalPrice > price ? <del>{formatPrice(originalPrice)}</del> : null}
         </div>
 
-        <p className="ss-product-note">Suitable for outdoor protection use</p>
-
-        <div className="ss-product-actions">
-          <button
-            type="button"
-            className="ss-card-btn ss-card-btn--cart"
-            onClick={handleAddToCart}
-            disabled={stock <= 0}
-          >
+        <div className="rep-product-card__actions">
+          <button type="button" onClick={handleAddToCart} disabled={stock <= 0}>
             Add to Cart
           </button>
-
-          <button
-            type="button"
-            className="ss-card-btn ss-card-btn--buy"
-            onClick={handleBuyNow}
-            disabled={stock <= 0}
-          >
+          <button type="button" onClick={handleBuyNow} disabled={stock <= 0}>
             Buy Now
           </button>
         </div>

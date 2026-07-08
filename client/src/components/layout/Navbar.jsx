@@ -1,13 +1,21 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getCartCount } from "../../utils/cartUtils";
 import { getUser, isLoggedIn, logout } from "../../utils/authUtils";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [search, setSearch] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(getCartCount());
   const [user, setUser] = useState(getUser());
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearch(params.get("keyword") || params.get("q") || "");
+  }, [location.search]);
 
   useEffect(() => {
     const sync = () => {
@@ -26,9 +34,13 @@ const Navbar = () => {
     };
   }, []);
 
+  const closeMenu = () => setMenuOpen(false);
+
   const handleSearch = (event) => {
     event.preventDefault();
+
     const value = search.trim();
+    closeMenu();
 
     if (!value) {
       navigate("/products");
@@ -41,13 +53,16 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     window.dispatchEvent(new Event("auth:updated"));
+    closeMenu();
     navigate("/");
   };
 
+  const firstName = user?.name ? user.name.split(" ")[0] : "User";
+
   return (
-    <header className="safe-header">
-      <div className="safe-container safe-header-main">
-        <Link to="/" className="safe-logo">
+    <header className="rep-header">
+      <div className="rep-container rep-header__inner">
+        <Link to="/" className="rep-logo" onClick={closeMenu}>
           <span>S</span>
           <div>
             <strong>ShopSphere</strong>
@@ -55,42 +70,80 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <form className="safe-search" onSubmit={handleSearch}>
+        <form className="rep-search" onSubmit={handleSearch}>
           <input
+            type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search snake, solar, ultrasonic repellers"
+            aria-label="Search products"
           />
           <button type="submit">Search</button>
         </form>
 
-        <div className="safe-actions">
+        <nav className="rep-nav">
+          <NavLink to="/products">Products</NavLink>
+          <NavLink to="/support">Support</NavLink>
+          <NavLink to="/track-order">Track Order</NavLink>
+          <NavLink to="/orders">Orders</NavLink>
+          <NavLink to="/cart" className="rep-cart">Cart ({cartCount})</NavLink>
+
           {isLoggedIn() ? (
             <>
-              <span className="safe-user">Hi, {user?.name?.split(" ")[0] || "User"}</span>
+              <span className="rep-user">Hi, {firstName}</span>
               <button type="button" onClick={handleLogout}>Logout</button>
             </>
           ) : (
             <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/register" className="rep-register">Register</NavLink>
             </>
           )}
+        </nav>
 
-          <Link to="/orders">Orders</Link>
-          <Link to="/cart" className="safe-cart">Cart ({cartCount})</Link>
-        </div>
+        <button
+          type="button"
+          className="rep-menu"
+          onClick={() => setMenuOpen((value) => !value)}
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
       </div>
 
-      <nav className="safe-nav">
-        <div className="safe-container">
-          <NavLink to="/products">Products</NavLink>
-          <NavLink to="/products?keyword=snake">Snake Repellers</NavLink>
-          <NavLink to="/products?keyword=solar">Solar Repellers</NavLink>
-          <NavLink to="/products?keyword=ultrasonic">Ultrasonic</NavLink>
-          <NavLink to="/support">Support</NavLink>
+      {menuOpen ? (
+        <div className="rep-mobile">
+          <div className="rep-container">
+            <form className="rep-search rep-search--mobile" onSubmit={handleSearch}>
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search products"
+                aria-label="Search products"
+              />
+              <button type="submit">Search</button>
+            </form>
+
+            <div className="rep-mobile__links">
+              <Link to="/products" onClick={closeMenu}>Products</Link>
+              <Link to="/support" onClick={closeMenu}>Support</Link>
+              <Link to="/track-order" onClick={closeMenu}>Track Order</Link>
+              <Link to="/orders" onClick={closeMenu}>Orders</Link>
+              <Link to="/cart" onClick={closeMenu}>Cart ({cartCount})</Link>
+
+              {isLoggedIn() ? (
+                <button type="button" onClick={handleLogout}>Logout</button>
+              ) : (
+                <>
+                  <Link to="/login" onClick={closeMenu}>Login</Link>
+                  <Link to="/register" onClick={closeMenu}>Register</Link>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </nav>
+      ) : null}
     </header>
   );
 };

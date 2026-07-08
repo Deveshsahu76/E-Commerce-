@@ -37,6 +37,17 @@ export const storefrontContent = {
   ],
 };
 
+export const getCategoryKeyword = (category = "") => {
+  const value = String(category).toLowerCase();
+
+  if (value.includes("snake")) return "snake";
+  if (value.includes("solar")) return "solar";
+  if (value.includes("ultrasonic")) return "ultrasonic";
+  if (value.includes("rodent")) return "rodent";
+
+  return value;
+};
+
 export const isRepellentProduct = (product = {}) => {
   const text = [
     product.name,
