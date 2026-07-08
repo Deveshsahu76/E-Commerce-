@@ -1326,3 +1326,149 @@ body {
     background: linear-gradient(135deg, var(--market-amber-2), var(--market-amber));
   }
 }
+/* =====================================================
+   Soft Premium Color Tone Patch
+   Purpose: reduce extra dark/highlight look and make UI cleaner
+===================================================== */
+
+:root {
+  --market-navy: #1f2a44;
+  --market-navy-2: #2f3b52;
+  --market-blue: #2563eb;
+  --market-amber: #d99a2b;
+  --market-amber-2: #f3c66d;
+  --market-cream: #fff8ec;
+  --market-bg: #f7f4ee;
+  --market-surface: #ffffff;
+  --market-text: #172033;
+  --market-muted: #667085;
+  --market-line: rgba(31, 42, 68, 0.12);
+  --market-success: #0f766e;
+  --market-danger: #b42318;
+  --market-shadow: 0 16px 42px rgba(31, 42, 68, 0.10);
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(217, 154, 43, 0.10), transparent 24rem),
+    linear-gradient(180deg, #fffaf2 0%, #f7f4ee 48%, #ffffff 100%) !important;
+}
+
+/* Header softer, still premium */
+.commerce-header {
+  background: #1f2a44;
+  box-shadow: 0 10px 26px rgba(31, 42, 68, 0.16);
+}
+
+.commerce-header__main {
+  background: linear-gradient(135deg, #1f2a44, #2f3b52);
+}
+
+.commerce-subnav {
+  background: #334155;
+}
+
+/* Search button less loud */
+.commerce-search button,
+.market-cta--primary,
+.market-btn--cart,
+.bottom-quick-nav a.active {
+  background: linear-gradient(135deg, #f3c66d, #d99a2b);
+  color: #172033;
+}
+
+/* Hero changed from very dark to premium warm-light */
+.market-hero {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(217, 154, 43, 0.18), transparent 24rem),
+    linear-gradient(135deg, #fff8ec 0%, #ffffff 48%, #eef2ff 100%);
+  color: #172033;
+}
+
+.market-hero p {
+  color: #667085;
+}
+
+.market-hero__mini div {
+  background: #ffffff;
+  border: 1px solid rgba(31, 42, 68, 0.10);
+  box-shadow: 0 12px 28px rgba(31, 42, 68, 0.08);
+}
+
+.market-hero__mini span {
+  color: #667085;
+}
+
+.market-cta--secondary {
+  background: #ffffff;
+  color: #172033;
+  border-color: rgba(31, 42, 68, 0.12);
+}
+
+/* Cards cleaner and lighter */
+.market-card,
+.market-section,
+.market-benefits__grid div,
+.market-deal-banner,
+.market-support-strip__grid,
+.market-newsletter__card,
+.market-filter,
+.market-sortbar,
+.market-gallery,
+.market-detail-info,
+.market-buy-box,
+.market-listing-hero {
+  box-shadow: 0 14px 34px rgba(31, 42, 68, 0.08);
+}
+
+.market-card:hover {
+  box-shadow: 0 20px 46px rgba(31, 42, 68, 0.13);
+}
+
+/* Badges less aggressive */
+.market-badge {
+  background: #b45309;
+  color: #ffffff;
+}
+
+.market-detail-price span,
+.market-buy-price span {
+  background: rgba(217, 154, 43, 0.14);
+  color: #92400e;
+}
+
+/* Buy Now button softer */
+.market-btn--buy {
+  background: #1f2a44;
+  color: #ffffff;
+}
+
+/* Footer/mobile nav softer */
+.bottom-quick-nav {
+  background: rgba(31, 42, 68, 0.94);
+}
+
+/* Better text contrast but not harsh */
+.market-card__title,
+.market-detail-info h1,
+.market-listing-hero h1,
+.market-section__head h2,
+.market-deal-banner h2,
+.market-support-strip h2,
+.market-newsletter h2 {
+  color: #172033;
+}
+
+.market-eyebrow {
+  color: #b7791f;
+}
+
+/* Hero image less heavy */
+.market-hero__visual {
+  box-shadow: 0 22px 56px rgba(31, 42, 68, 0.16);
+}
+
+.market-floating-deal {
+  background: rgba(255, 255, 255, 0.94);
+}
+
