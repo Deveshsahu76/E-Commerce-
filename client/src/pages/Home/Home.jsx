@@ -4,24 +4,28 @@ import ProductCard from "../../components/common/ProductCard";
 import LoadingGrid from "../../components/common/LoadingGrid";
 import { normalizeProductsResponse, storefrontApi } from "../../services/storefrontApi";
 import { calculateDiscount } from "../../utils/money";
+import { storefrontContent } from "../../data/storefrontContent";
 
 const ProductRail = ({ eyebrow, title, subtitle, products, to }) => {
   if (!products.length) return null;
 
   return (
-    <section className="market-section">
-      <div className="market-section__head">
+    <section className="home-section">
+      <div className="home-section__head">
         <div>
-          <span className="market-eyebrow">{eyebrow}</span>
+          <span className="home-eyebrow">{eyebrow}</span>
           <h2>{title}</h2>
-          {subtitle && <p>{subtitle}</p>}
+          {subtitle ? <p>{subtitle}</p> : null}
         </div>
-        <Link to={to}>See more →</Link>
+
+        <Link to={to} className="home-section__link">
+          View More →
+        </Link>
       </div>
 
-      <div className="market-product-rail">
+      <div className="home-product-rail">
         {products.map((product) => (
-          <div className="market-product-rail__item" key={product._id || product.id}>
+          <div className="home-product-rail__item" key={product._id || product.id}>
             <ProductCard product={product} />
           </div>
         ))}
@@ -37,207 +41,235 @@ const Home = () => {
   useEffect(() => {
     let mounted = true;
 
-    const loadProducts = async () => {
+    const fetchProducts = async () => {
       try {
-        const response = await storefrontApi.getProducts({ page: 1, limit: 16 });
+        const response = await storefrontApi.getProducts({ page: 1, limit: 18 });
         const normalized = normalizeProductsResponse(response);
 
         if (mounted) {
-          setProducts(normalized.products);
+          setProducts(normalized.products || []);
           setStatus("success");
         }
-      } catch {
-        if (mounted) setStatus("error");
+      } catch (error) {
+        if (mounted) {
+          setStatus("error");
+        }
       }
     };
 
-    loadProducts();
+    fetchProducts();
 
     return () => {
       mounted = false;
     };
   }, []);
 
-  const featured = useMemo(() => {
-    const items = products.filter((product) => product.isFeatured);
-    return (items.length ? items : products).slice(0, 8);
+  const featuredProducts = useMemo(() => {
+    const featured = products.filter((product) => product.isFeatured);
+    return (featured.length ? featured : products).slice(0, 8);
   }, [products]);
 
-  const deals = useMemo(() => {
-    const items = products.filter((product) => calculateDiscount(product) > 0 || product.offerTitle);
-    return (items.length ? items : products).slice(0, 8);
-  }, [products]);
-
-  const latest = useMemo(() => {
+  const latestProducts = useMemo(() => {
     return [...products]
       .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
       .slice(0, 8);
   }, [products]);
 
-  const bestSellers = useMemo(() => {
+  const bestSellerProducts = useMemo(() => {
     return [...products]
       .sort((a, b) => Number(b.sold || 0) - Number(a.sold || 0))
       .slice(0, 8);
   }, [products]);
 
-  return (
-    <div className="market-home">
-      <section className="market-hero">
-        <div className="container market-hero__grid">
-          <div className="market-hero__copy">
-            <span className="market-eyebrow">Secure Checkout • Fast Ordering • Best Offers</span>
-            <h1>Shop premium products with deals made for everyday buyers.</h1>
-            <p>
-              Discover quality products, compare prices quickly, add to cart smoothly,
-              and checkout with trusted payment options.
-            </p>
+  const offerProducts = useMemo(() => {
+    const discounted = products.filter(
+      (product) => calculateDiscount(product) > 0 || product.offerTitle
+    );
+    return discounted.slice(0, 8);
+  }, [products]);
 
-            <div className="market-hero__actions">
-              <Link className="market-cta market-cta--primary" to="/products">Shop Now</Link>
-              <Link className="market-cta market-cta--secondary" to="/offers">Explore Deals</Link>
+  return (
+    <div className="store-home">
+      <section className="store-hero">
+        <div className="container store-hero__grid">
+          <div className="store-hero__content">
+            <span className="home-eyebrow">{storefrontContent.hero.eyebrow}</span>
+            <h1>{storefrontContent.hero.title}</h1>
+            <p>{storefrontContent.hero.subtitle}</p>
+
+            <div className="store-hero__actions">
+              <Link
+                to={storefrontContent.hero.primaryCta.link}
+                className="store-btn store-btn--primary"
+              >
+                {storefrontContent.hero.primaryCta.label}
+              </Link>
+
+              <Link
+                to={storefrontContent.hero.secondaryCta.link}
+                className="store-btn store-btn--secondary"
+              >
+                {storefrontContent.hero.secondaryCta.label}
+              </Link>
             </div>
 
-            <div className="market-hero__mini">
-              <div>
-                <strong>Secure</strong>
-                <span>Payments</span>
-              </div>
-              <div>
-                <strong>Fast</strong>
-                <span>Delivery Support</span>
-              </div>
-              <div>
-                <strong>Easy</strong>
-                <span>Returns Help</span>
-              </div>
+            <div className="store-hero__highlights">
+              {storefrontContent.topHighlights.map((item) => (
+                <div key={item.title} className="store-hero__highlight">
+                  <strong>{item.title}</strong>
+                  <span>{item.description}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="market-hero__visual">
+          <div className="store-hero__visual">
             <img
-              src="https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1400&q=85"
+              src={storefrontContent.hero.image}
               alt="Premium shopping experience"
             />
-            <div className="market-floating-deal">
-              <span>Today’s Deal</span>
-              <strong>Special prices on selected products</strong>
-              <Link to="/offers">View deals</Link>
+
+            {storefrontContent.heroPromo.enabled ? (
+              <div className="store-hero__promo">
+                <span>{storefrontContent.heroPromo.badge}</span>
+                <strong>{storefrontContent.heroPromo.title}</strong>
+                <p>{storefrontContent.heroPromo.description}</p>
+                <Link to={storefrontContent.heroPromo.ctaLink}>
+                  {storefrontContent.heroPromo.ctaLabel}
+                </Link>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </section>
+
+      <section className="store-trust-grid">
+        <div className="container store-trust-grid__inner">
+          {storefrontContent.trustCards.map((item) => (
+            <div key={item.title} className="store-trust-card">
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      <section className="market-benefits">
-        <div className="container market-benefits__grid">
-          <div>
-            <strong>Secure Checkout</strong>
-            <span>Pay with trusted payment options</span>
-          </div>
-          <div>
-            <strong>Fast Ordering</strong>
-            <span>Quick cart and checkout flow</span>
-          </div>
-          <div>
-            <strong>Quality Products</strong>
-            <span>Clear product details and pricing</span>
-          </div>
-          <div>
-            <strong>Customer Support</strong>
-            <span>Help for orders, returns and payments</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="container market-deal-banner">
+      <section className="container store-feature-banner">
         <div>
-          <span className="market-eyebrow">Deal Zone</span>
-          <h2>Today’s Deals are ready for your customers.</h2>
-          <p>Highlight offers, fast-moving products, and best-value items in one premium section.</p>
+          <span className="home-eyebrow">Storefront Experience</span>
+          <h2>Showcase products in a clean and customer-friendly way.</h2>
+          <p>
+            Keep the homepage modern, easy to browse, and focused on conversions.
+          </p>
         </div>
-        <Link className="market-cta market-cta--light" to="/offers">Shop Deals</Link>
+
+        <Link to="/products" className="store-btn store-btn--secondary">
+          Browse Store
+        </Link>
       </section>
 
       <div className="container">
-        {status === "loading" && (
-          <section className="market-section">
-            <div className="market-section__head">
+        {status === "loading" ? (
+          <section className="home-section">
+            <div className="home-section__head">
               <div>
-                <span className="market-eyebrow">Loading Products</span>
-                <h2>Finding the best products for you</h2>
+                <span className="home-eyebrow">Loading Products</span>
+                <h2>Fetching products for your storefront</h2>
               </div>
             </div>
             <LoadingGrid count={4} />
           </section>
-        )}
+        ) : null}
 
-        {status === "error" && (
-          <div className="market-state">
-            <h2>Products are taking longer to load</h2>
-            <p>Please refresh the page in a few seconds.</p>
+        {status === "error" ? (
+          <div className="store-empty-state">
+            <h2>Products are taking a little longer to load</h2>
+            <p>Please refresh the page after a few seconds.</p>
           </div>
-        )}
+        ) : null}
 
-        {status === "success" && (
+        {status === "success" ? (
           <>
-            <ProductRail
-              eyebrow="Today's Deals"
-              title="Fresh deals for quick shopping"
-              subtitle="A marketplace-style row for high-converting offers."
-              products={deals}
-              to="/offers"
-            />
+            {offerProducts.length > 0 ? (
+              <ProductRail
+                eyebrow="Today’s Picks"
+                title="Special selections for quick shopping"
+                subtitle="Promoted products and highlighted offers can appear here when available."
+                products={offerProducts}
+                to="/offers"
+              />
+            ) : null}
 
             <ProductRail
               eyebrow="Featured Products"
-              title="Recommended for customers"
-              subtitle="Selected products to help customers start shopping."
-              products={featured}
+              title="Products worth highlighting"
+              subtitle="Show important or promoted products with a premium presentation."
+              products={featuredProducts}
               to="/products"
             />
 
             <ProductRail
               eyebrow="New Arrivals"
               title="Recently added products"
-              subtitle="Keep returning visitors engaged with fresh product listings."
-              products={latest}
+              subtitle="Help customers discover what’s new in the store."
+              products={latestProducts}
               to="/new-arrivals"
             />
 
             <ProductRail
               eyebrow="Best Sellers"
-              title="Popular picks from the store"
-              subtitle="Show products customers are choosing often."
-              products={bestSellers}
+              title="Products customers love"
+              subtitle="Use popular products to build trust and improve conversions."
+              products={bestSellerProducts}
               to="/best-sellers"
             />
           </>
-        )}
+        ) : null}
       </div>
 
-      <section className="market-support-strip">
-        <div className="container market-support-strip__grid">
+      <section className="store-support-strip">
+        <div className="container store-support-strip__inner">
           <div>
-            <span className="market-eyebrow">Need help?</span>
-            <h2>Customer support for orders, payments and delivery.</h2>
-            <p>Guide customers to get help quickly without leaving the shopping flow.</p>
+            <span className="home-eyebrow">Store Promise</span>
+            <h2>{storefrontContent.supportingStrip.title}</h2>
+            <p>{storefrontContent.supportingStrip.description}</p>
           </div>
-          <div className="market-support-actions">
-            <Link className="market-cta market-cta--primary" to="/support">Customer Support</Link>
-            <Link className="market-cta market-cta--secondary" to="/track-order">Track Order</Link>
+
+          <div className="store-support-strip__actions">
+            <Link
+              to={storefrontContent.supportingStrip.primaryCta.link}
+              className="store-btn store-btn--primary"
+            >
+              {storefrontContent.supportingStrip.primaryCta.label}
+            </Link>
+
+            <Link
+              to={storefrontContent.supportingStrip.secondaryCta.link}
+              className="store-btn store-btn--secondary"
+            >
+              {storefrontContent.supportingStrip.secondaryCta.label}
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className="market-newsletter">
-        <div className="container market-newsletter__card">
+      <section className="store-newsletter">
+        <div className="container store-newsletter__card">
           <div>
-            <span className="market-eyebrow">Stay Updated</span>
-            <h2>Get updates about new products and special offers.</h2>
-            <p>Use this section later for customer retention and campaigns.</p>
+            <span className="home-eyebrow">Newsletter</span>
+            <h2>{storefrontContent.newsletter.title}</h2>
+            <p>{storefrontContent.newsletter.description}</p>
           </div>
+
           <form onSubmit={(event) => event.preventDefault()}>
-            <input type="email" placeholder="Enter your email" aria-label="Email" />
-            <button type="submit">Subscribe</button>
+            <input
+              type="email"
+              placeholder={storefrontContent.newsletter.placeholder}
+              aria-label="Email address"
+            />
+            <button type="submit">
+              {storefrontContent.newsletter.buttonText}
+            </button>
           </form>
         </div>
       </section>
