@@ -1,199 +1,94 @@
-import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { orderApi } from "../../services/ecommerceApi";
-import { isLoggedIn } from "../../utils/authStorage";
-
-const formatPrice = (price) => {
-  return Number(price || 0).toLocaleString("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  });
-};
-
-const formatDate = (date) => {
-  if (!date) return "N/A";
-
-  return new Date(date).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
+import { useEffect, useState } from "react";
+import { storefrontApi } from "../../services/storefrontApi";
+import { getToken } from "../../utils/authUtils";
+import { formatPrice } from "../../utils/money";
 
 const Orders = () => {
   const navigate = useNavigate();
-
   const [orders, setOrders] = useState([]);
-  const [pagination, setPagination] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState("loading");
 
-  const loadOrders = async () => {
-    if (!isLoggedIn()) {
-      toast.error("Please login to view your orders");
+  useEffect(() => {
+    if (!getToken()) {
       navigate("/login", { state: { from: "/orders" } });
       return;
     }
 
-    setLoading(true);
-    setError("");
+    let mounted = true;
 
-    try {
-      const { data } = await orderApi.myOrders();
-      setOrders(Array.isArray(data?.orders) ? data.orders : []);
-      setPagination(data?.pagination || null);
-    } catch (err) {
-      setError(err?.message || "Unable to load orders");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadOrders = async () => {
+      try {
+        const response = await storefrontApi.getMyOrders();
+        const orderList = response?.orders || response?.data || response || [];
 
-   useEffect(() => {
+        if (mounted) {
+          setOrders(Array.isArray(orderList) ? orderList : []);
+          setStatus("success");
+        }
+      } catch {
+        if (mounted) setStatus("error");
+      }
+    };
+
     loadOrders();
-  }, []);
 
-  const handleCancelOrder = async (orderId) => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel this order?");
-
-    if (!confirmCancel) return;
-
-    try {
-      await orderApi.cancel(orderId);
-      toast.success("Order cancelled successfully");
-      loadOrders();
-    } catch (err) {
-      toast.error(err?.message || "Unable to cancel order");
-    }
-  };
+    return () => {
+      mounted = false;
+    };
+  }, [navigate]);
 
   return (
-    <main>
-      <section className="page-hero">
-        <div className="container page-hero__inner">
+    <section className="page-section">
+      <div className="container">
+        <div className="page-hero compact">
           <span className="eyebrow">My Orders</span>
-          <h1>Track your shopping history.</h1>
-          <p>
-            View your placed orders, payment status, delivery status, and order details.
-          </p>
+          <h1>Track your purchases in one place.</h1>
+          <p>View order status, payment details, and delivery updates.</p>
         </div>
-      </section>
 
-      <section className="section orders-section">
-        <div className="container">
-          {loading && (
-            <div className="grid orders-grid">
-              {[1, 2, 3].map((item) => (
-                <div className="skeleton-card" key={item} />
-              ))}
-            </div>
-          )}
+        {status === "loading" && <div className="state-card">Loading your orders...</div>}
 
-          {error && <div className="alert alert--error">{error}</div>}
+        {status === "error" && (
+          <div className="state-card">
+            <h2>Unable to load orders</h2>
+            <p>Please refresh and try again.</p>
+          </div>
+        )}
 
-          {!loading && !error && orders.length === 0 && (
-            <div className="empty-state empty-state--large">
-              <h3>No orders found</h3>
-              <p>Start shopping and your orders will appear here.</p>
-              <Link to="/products" className="btn btn--large">
-                Browse Products
-              </Link>
-            </div>
-          )}
+        {status === "success" && orders.length === 0 && (
+          <div className="state-card spacious">
+            <h2>No orders yet</h2>
+            <p>Your placed orders will appear here.</p>
+            <Link className="btn btn-primary" to="/products">Start Shopping</Link>
+          </div>
+        )}
 
-          {!loading && !error && orders.length > 0 && (
-            <>
-              <div className="orders-header">
-                <div>
-                  <h2>Your Orders</h2>
-                  <p>
-                    {pagination?.total || orders.length} order
-                    {(pagination?.total || orders.length) === 1 ? "" : "s"} found
-                  </p>
-                </div>
+        {status === "success" && orders.length > 0 && (
+          <div className="order-list">
+            {orders.map((order) => {
+              const orderId = order._id || order.id;
+              const total = order.totalPrice || order.totalAmount || order.amount || 0;
 
-                <Link to="/products" className="btn btn--ghost">
-                  Continue Shopping
-                </Link>
-              </div>
-
-              <div className="orders-grid">
-                {orders.map((order) => (
-                  <article className="order-card" key={order._id}>
-                    <div className="order-card__top">
-                      <div>
-                        <span className="order-id">Order #{order._id?.slice(-8)}</span>
-                        <h3>{formatPrice(order.totalPrice)}</h3>
-                        <p>Placed on {formatDate(order.createdAt)}</p>
-                      </div>
-
-                      <span className={`order-status order-status--${order.status}`}>
-                        {order.status}
-                      </span>
-                    </div>
-
-                    <div className="order-items-preview">
-                      {(order.orderItems || []).slice(0, 3).map((item, index) => (
-                        <div className="order-preview-item" key={`${order._id}-${index}`}>
-                          <img
-                            src={
-                              item.image ||
-                              "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=900&q=80"
-                            }
-                            alt={item.name}
-                          />
-                          <div>
-                            <strong>{item.name}</strong>
-                            <span>
-                              Qty {item.quantity} × {formatPrice(item.price)}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="order-card__meta">
-                      <div>
-                        <span>Payment</span>
-                        <strong>{order.isPaid ? "Paid" : "Pending"}</strong>
-                      </div>
-
-                      <div>
-                        <span>Delivery</span>
-                        <strong>{order.isDelivered ? "Delivered" : "In Progress"}</strong>
-                      </div>
-
-                      <div>
-                        <span>Method</span>
-                        <strong>{order.paymentMethod}</strong>
-                      </div>
-                    </div>
-
-                    <div className="order-card__actions">
-                      <Link to={`/orders/${order._id}`} className="btn btn--small">
-                        View Details
-                      </Link>
-
-                      {["pending", "paid", "processing"].includes(order.status) && (
-                        <button
-                          type="button"
-                          className="btn btn--ghost btn--small"
-                          onClick={() => handleCancelOrder(order._id)}
-                        >
-                          Cancel
-                        </button>
-                      )}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      </section>
-    </main>
+              return (
+                <article className="order-card" key={orderId}>
+                  <div>
+                    <span className="eyebrow">Order #{String(orderId).slice(-8)}</span>
+                    <h2>{formatPrice(total)}</h2>
+                    <p>{new Date(order.createdAt || Date.now()).toLocaleDateString("en-IN")}</p>
+                  </div>
+                  <div className="status-stack">
+                    <span className="status-badge">{order.orderStatus || order.status || "Placed"}</span>
+                    <span className="status-badge soft">{order.paymentStatus || (order.isPaid ? "Paid" : "Pending")}</span>
+                  </div>
+                  <Link className="btn btn-ghost btn-sm" to={`/orders/${orderId}`}>View Details</Link>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 

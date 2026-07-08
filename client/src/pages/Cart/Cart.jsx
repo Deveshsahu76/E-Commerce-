@@ -1,227 +1,127 @@
-import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import {
-  clearCart,
-  getCartItems,
-  removeCartItem,
-  updateCartItemQuantity,
-} from "../../utils/cartStorage";
-
-const formatPrice = (price) => {
-  return Number(price || 0).toLocaleString("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  });
-};
+import { useEffect, useState } from "react";
+import { addToCart } from "../../utils/cartUtils";
+import { formatPrice } from "../../utils/money";
+import { getCartSummary, removeFromCart, updateCartQuantity } from "../../utils/cartUtils";
+import { toggleWishlist } from "../../utils/wishlistUtils";
 
 const Cart = () => {
-  const [items, setItems] = useState([]);
+  const [summary, setSummary] = useState(getCartSummary());
 
-  const loadCart = () => {
-    setItems(getCartItems());
-  };
+  const syncCart = () => setSummary(getCartSummary());
 
   useEffect(() => {
-    loadCart();
-
-    window.addEventListener("cart-updated", loadCart);
-    window.addEventListener("storage", loadCart);
-
-    return () => {
-      window.removeEventListener("cart-updated", loadCart);
-      window.removeEventListener("storage", loadCart);
-    };
+    window.addEventListener("cart:updated", syncCart);
+    return () => window.removeEventListener("cart:updated", syncCart);
   }, []);
 
-  const subtotal = useMemo(() => {
-    return items.reduce(
-      (total, item) => total + Number(item.price || 0) * Number(item.quantity || 0),
-      0
-    );
-  }, [items]);
-
-  const deliveryFee = subtotal === 0 || subtotal >= 999 ? 0 : 99;
-  const platformFee = subtotal === 0 ? 0 : 19;
-  const total = subtotal + deliveryFee + platformFee;
-
-  const handleQuantityChange = (productId, quantity) => {
-    const updated = updateCartItemQuantity(productId, quantity);
-    setItems(updated);
+  const handleMoveToWishlist = (item) => {
+    toggleWishlist(item.product || item);
+    removeFromCart(item.id);
   };
 
-  const handleRemove = (productId) => {
-    const updated = removeCartItem(productId);
-    setItems(updated);
-    toast.success("Item removed from cart");
-  };
-
-  const handleClearCart = () => {
-    clearCart();
-    setItems([]);
-    toast.success("Cart cleared");
-  };
-
-  if (items.length === 0) {
+  if (!summary.cart.length) {
     return (
-      <main>
-        <section className="page-hero">
-          <div className="container page-hero__inner">
-            <span className="eyebrow">Shopping Cart</span>
-            <h1>Your cart is empty.</h1>
-            <p>
-              Add products to your cart and continue to checkout when you are ready.
-            </p>
+      <section className="page-section">
+        <div className="container">
+          <div className="state-card spacious">
+            <span className="empty-icon">🛒</span>
+            <h1>Your cart is empty</h1>
+            <p>Explore products and add your favourites to start shopping.</p>
+            <Link className="btn btn-primary" to="/products">Shop Products</Link>
           </div>
-        </section>
-
-        <section className="section">
-          <div className="container">
-            <div className="empty-state empty-state--large">
-              <h3>No items in cart</h3>
-              <p>Browse products and add your favourite items to start shopping.</p>
-              <Link to="/products" className="btn btn--large">
-                Browse Products
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
+        </div>
+      </section>
     );
   }
 
   return (
-    <main>
-      <section className="page-hero">
-        <div className="container page-hero__inner">
+    <section className="page-section cart-page">
+      <div className="container">
+        <div className="page-hero compact">
           <span className="eyebrow">Shopping Cart</span>
-          <h1>Review your cart before checkout.</h1>
-          <p>
-            Update quantities, remove items, and continue to secure payment checkout.
-          </p>
+          <h1>Review your products before checkout.</h1>
+          <p>Update quantity, remove items, or continue shopping before placing your order.</p>
         </div>
-      </section>
 
-      <section className="section cart-section">
-        <div className="container cart-grid">
+        <div className="cart-layout">
           <div className="cart-list">
-            <div className="cart-list__header">
-              <div>
-                <h2>Cart items</h2>
-                <p>
-                  {items.length} item{items.length === 1 ? "" : "s"} added
-                </p>
-              </div>
-
-              <button type="button" className="btn btn--ghost" onClick={handleClearCart}>
-                Clear Cart
-              </button>
-            </div>
-
-            {items.map((item) => (
-              <article className="cart-item" key={item.productId}>
-                <Link to={`/products/${item.productId}`} className="cart-item__image">
-                  <img src={item.image} alt={item.name} />
-                </Link>
-
-                <div className="cart-item__content">
-                  <div>
-                    <span className="cart-item__category">{item.category}</span>
-                    <h3>
-                      <Link to={`/products/${item.productId}`}>{item.name}</Link>
-                    </h3>
-                    <p>{formatPrice(item.price)} per item</p>
-                  </div>
-
-                  <div className="cart-item__actions">
-                    <div className="quantity-stepper">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleQuantityChange(item.productId, Number(item.quantity) - 1)
-                        }
-                        disabled={Number(item.quantity) <= 1}
-                      >
-                        −
-                      </button>
-                      <strong>{item.quantity}</strong>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleQuantityChange(item.productId, Number(item.quantity) + 1)
-                        }
-                        disabled={
-                          Number(item.stock || 999) > 0 &&
-                          Number(item.quantity) >= Number(item.stock)
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="cart-item__remove"
-                      onClick={() => handleRemove(item.productId)}
-                    >
+            {summary.cart.map((item) => (
+              <article className="cart-item" key={item.id}>
+                <img src={item.image} alt={item.name} />
+                <div className="cart-item-info">
+                  <span>{item.brand || "Trusted Brand"}</span>
+                  <h2>{item.name}</h2>
+                  <strong>{formatPrice(item.price)}</strong>
+                  {item.stock <= item.quantity && (
+                    <small className="warning-text">Selected quantity matches available stock.</small>
+                  )}
+                  <div className="cart-item-actions">
+                    <button type="button" onClick={() => handleMoveToWishlist(item)}>
+                      Move to Wishlist
+                    </button>
+                    <button type="button" onClick={() => removeFromCart(item.id)}>
                       Remove
                     </button>
                   </div>
                 </div>
 
-                <div className="cart-item__total">
-                  <strong>
-                    {formatPrice(Number(item.price || 0) * Number(item.quantity || 0))}
-                  </strong>
-                  <span>{item.stock} in stock</span>
+                <div className="quantity-row compact">
+                  <button
+                    type="button"
+                    onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                  >
+                    −
+                  </button>
+                  <strong>{item.quantity}</strong>
+                  <button
+                    type="button"
+                    onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                  >
+                    +
+                  </button>
                 </div>
               </article>
             ))}
           </div>
 
-          <aside className="cart-summary">
+          <aside className="summary-card">
             <h2>Order Summary</h2>
 
-            <div className="summary-row">
+            <div className="coupon-box">
+              <input placeholder="Coupon code" />
+              <button type="button">Apply</button>
+            </div>
+
+            <div className="summary-line">
               <span>Subtotal</span>
-              <strong>{formatPrice(subtotal)}</strong>
+              <strong>{formatPrice(summary.subtotal)}</strong>
             </div>
-
-            <div className="summary-row">
-              <span>Delivery</span>
-              <strong>{deliveryFee === 0 ? "Free" : formatPrice(deliveryFee)}</strong>
+            <div className="summary-line">
+              <span>Delivery Fee</span>
+              <strong>{summary.deliveryFee === 0 ? "Free" : formatPrice(summary.deliveryFee)}</strong>
             </div>
-
-            <div className="summary-row">
-              <span>Platform fee</span>
-              <strong>{formatPrice(platformFee)}</strong>
+            <div className="summary-line">
+              <span>Discount</span>
+              <strong>{formatPrice(summary.discount)}</strong>
             </div>
-
-            <div className="summary-divider" />
-
-            <div className="summary-row summary-row--total">
+            <div className="summary-line total">
               <span>Total</span>
-              <strong>{formatPrice(total)}</strong>
+              <strong>{formatPrice(summary.total)}</strong>
             </div>
 
-            <Link to="/checkout" className="btn btn--large cart-summary__checkout">
-              Proceed to Checkout
-            </Link>
+            {summary.subtotal < 999 && (
+              <p className="free-delivery-note">
+                Add products worth {formatPrice(999 - summary.subtotal)} more for free delivery.
+              </p>
+            )}
 
-            <Link to="/products" className="cart-summary__continue">
-              Continue shopping →
-            </Link>
-
-            <div className="cart-summary__trust">
-              <p>🔒 Secure checkout ready</p>
-              <p>💳 Razorpay payment flow next</p>
-              <p>📦 Order tracking API next</p>
-            </div>
+            <Link className="btn btn-primary full" to="/checkout">Proceed to Checkout</Link>
+            <Link className="btn btn-ghost full" to="/products">Continue Shopping</Link>
           </aside>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
   );
 };
 
