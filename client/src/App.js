@@ -1,53 +1,28 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Navbar from "./components/layout/Navbar";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Footer from "./components/layout/Footer";
-import AdminPanel from "./pages/admin/AdminPanel";
 import InfoPage from "./components/common/InfoPage";
-import AdminPanel from "./pages/admin/AdminPanel";
 import { staticPages } from "./data/staticPageData";
-import AdminPanel from "./pages/admin/AdminPanel";
-
 import Home from "./pages/Home/Home";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Products from "./pages/Products/Products";
-import AdminPanel from "./pages/admin/AdminPanel";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Cart from "./pages/Cart/Cart";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Checkout from "./pages/Checkout/Checkout";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Login from "./pages/Login/Login";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Register from "./pages/Register/Register";
-import AdminPanel from "./pages/admin/AdminPanel";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Orders from "./pages/Orders/Orders";
-import AdminPanel from "./pages/admin/AdminPanel";
 import OrderDetails from "./pages/OrderDetails/OrderDetails";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Wishlist from "./pages/Wishlist/Wishlist";
-import AdminPanel from "./pages/admin/AdminPanel";
 import CollectionPage from "./pages/CollectionPage/CollectionPage";
-import AdminPanel from "./pages/admin/AdminPanel";
 import SearchResults from "./pages/SearchResults/SearchResults";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Contact from "./pages/Contact/Contact";
-import AdminPanel from "./pages/admin/AdminPanel";
 import Support from "./pages/Support/Support";
-import AdminPanel from "./pages/admin/AdminPanel";
 import TrackOrder from "./pages/TrackOrder/TrackOrder";
-import AdminPanel from "./pages/admin/AdminPanel";
 import OrderSuccess from "./pages/OrderSuccess/OrderSuccess";
-import AdminPanel from "./pages/admin/AdminPanel";
 import PaymentFailed from "./pages/PaymentFailed/PaymentFailed";
-import AdminPanel from "./pages/admin/AdminPanel";
 import NotFound from "./pages/NotFound/NotFound";
 import AdminPanel from "./pages/admin/AdminPanel";
-
 const StaticRoute = ({ pageKey }) => {
   const page = staticPages[pageKey];
   return <InfoPage {...page} />;
@@ -60,7 +35,6 @@ function App() {
         <Navbar />
         <main className="site-main">
           <Routes>
-        <Route path="/admin/*" element={<AdminPanel />} />
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:id" element={<ProductDetails />} />
@@ -93,6 +67,7 @@ function App() {
             <Route path="/privacy-policy" element={<StaticRoute pageKey="privacy" />} />
             <Route path="/terms-conditions" element={<StaticRoute pageKey="terms" />} />
             <Route path="/cancellation-policy" element={<StaticRoute pageKey="cancellation" />} />
+        <Route path="/admin/*" element={<AdminPanel />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
