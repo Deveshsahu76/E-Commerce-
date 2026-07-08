@@ -59,6 +59,18 @@ export const storefrontApi = {
       body: JSON.stringify(payload),
     }),
 
+  forgotPassword: (payload) =>
+    request("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  resetPassword: (payload) =>
+    request("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
   getMyOrders: () => request("/orders/my"),
 
   getOrderById: (id) => request(`/orders/${id}`),

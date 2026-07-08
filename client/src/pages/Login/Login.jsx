@@ -6,7 +6,9 @@ import { saveAuth } from "../../utils/authUtils";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
 
@@ -15,6 +17,17 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+
+    if (!form.email.trim()) {
+      setError("Please enter your email address.");
+      return;
+    }
+
+    if (!form.password.trim()) {
+      setError("Please enter your password.");
+      return;
+    }
+
     setStatus("loading");
 
     try {
@@ -41,19 +54,36 @@ const Login = () => {
               type="email"
               value={form.email}
               onChange={(event) => setForm({ ...form, email: event.target.value })}
+              placeholder="Enter your email"
               required
             />
           </label>
 
           <label>
             Password
-            <input
-              type="password"
-              value={form.password}
-              onChange={(event) => setForm({ ...form, password: event.target.value })}
-              required
-            />
+            <div className="password-field">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={(event) => setForm({ ...form, password: event.target.value })}
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((value) => !value)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </label>
+
+          <div className="auth-row">
+            <span>Forgot your password?</span>
+            <Link to="/forgot-password">Reset Password</Link>
+          </div>
 
           {error && <p className="error-text">{error}</p>}
 

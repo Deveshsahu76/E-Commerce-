@@ -1,15 +1,57 @@
-﻿const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: [true, "Name is required"], trim: true },
-    email: { type: String, required: [true, "Email is required"], unique: true, lowercase: true, trim: true },
-    password: { type: String, required: [true, "Password is required"], minlength: 6, select: false },
-    phone: { type: String, default: "" },
-    avatar: { type: String, default: "" },
-    role: { type: String, enum: ["user", "admin"], default: "user" },
-    isVerified: { type: Boolean, default: false },
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: 6,
+      select: false,
+    },
+    phone: {
+      type: String,
+      default: "",
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    resetPasswordOtpHash: {
+      type: String,
+      select: false,
+    },
+    resetPasswordOtpExpires: {
+      type: Date,
+      select: false,
+    },
+    resetPasswordOtpAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
   },
   { timestamps: true }
 );
@@ -20,7 +62,7 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  return bcrypt.compare(enteredPassword, this.password);
 };
 
 module.exports = mongoose.model("User", userSchema);
