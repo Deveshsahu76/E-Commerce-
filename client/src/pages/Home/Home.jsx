@@ -95,6 +95,7 @@ const Home = () => {
               <Link className="ss-btn ss-btn--primary" to={storefrontContent.hero.primaryCta.link}>
                 {storefrontContent.hero.primaryCta.label}
               </Link>
+
               <Link className="ss-btn ss-btn--light" to={storefrontContent.hero.secondaryCta.link}>
                 {storefrontContent.hero.secondaryCta.label}
               </Link>
@@ -102,28 +103,29 @@ const Home = () => {
           </div>
 
           <div className="ss-hero__visual">
-            <div className="ss-visual-card ss-visual-card--main">
-              <span>Premium Picks</span>
-              <strong>Curated products for everyday shopping</strong>
-              <p>Clean listings, smooth cart flow, and trusted checkout.</p>
+            <div className="ss-device-mockup">
+              <div className="ss-device-mockup__top"></div>
+              <div className="ss-device-mockup__body"></div>
+              <div className="ss-device-mockup__waves">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+
+            <div className="ss-visual-card">
+              <span>Outdoor Safety</span>
+              <strong>Solar and ultrasonic protection devices</strong>
+              <p>Made for gardens, lawns, farms and home surroundings.</p>
             </div>
 
             <div className="ss-category-cloud">
               {storefrontContent.categories.map((category) => (
-                <Link to="/products" key={category}>{category}</Link>
+                <Link to={`/products?keyword=${encodeURIComponent(category)}`} key={category}>
+                  {category}
+                </Link>
               ))}
             </div>
-
-            {storefrontContent.heroPromo.enabled ? (
-              <div className="ss-promo-card">
-                <span>{storefrontContent.heroPromo.badge}</span>
-                <strong>{storefrontContent.heroPromo.title}</strong>
-                <p>{storefrontContent.heroPromo.description}</p>
-                <Link to={storefrontContent.heroPromo.ctaLink}>
-                  {storefrontContent.heroPromo.ctaLabel}
-                </Link>
-              </div>
-            ) : null}
           </div>
         </div>
       </section>
@@ -141,9 +143,11 @@ const Home = () => {
 
       <section className="container ss-feature-strip">
         <div>
-          <span className="ss-eyebrow">Storefront Experience</span>
-          <h2>Designed to make shopping simple, clean and trustworthy.</h2>
-          <p>Customers can browse products, compare details, add to cart and checkout without confusion.</p>
+          <span className="ss-eyebrow">Product Focus</span>
+          <h2>Built for pest control, outdoor safety and garden protection products.</h2>
+          <p>
+            Product cards show full product images, readable names, clear price and direct cart action.
+          </p>
         </div>
         <Link className="ss-btn ss-btn--primary" to="/products">Browse Store</Link>
       </section>
@@ -154,7 +158,7 @@ const Home = () => {
             <div className="ss-section__head">
               <div>
                 <span>Loading Products</span>
-                <h2>Preparing your storefront</h2>
+                <h2>Preparing protection products</h2>
               </div>
             </div>
             <LoadingGrid count={4} />
@@ -164,7 +168,7 @@ const Home = () => {
         {status === "error" ? (
           <div className="ss-empty">
             <h2>Products are taking longer to load</h2>
-            <p>Please refresh after a few seconds.</p>
+            <p>Please refresh after a few seconds. Free backend may take time to wake up.</p>
           </div>
         ) : null}
 
@@ -173,8 +177,8 @@ const Home = () => {
             {deals.length > 0 ? (
               <ProductRail
                 eyebrow="Today’s Picks"
-                title="Special selections"
-                subtitle="Offer products can appear here when admin enables promotions later."
+                title="Recommended protection devices"
+                subtitle="Offer and promoted products can appear here when enabled."
                 products={deals}
                 to="/offers"
               />
@@ -182,24 +186,24 @@ const Home = () => {
 
             <ProductRail
               eyebrow="Featured Products"
-              title="Products worth exploring"
-              subtitle="Highlight your best products in a clean premium layout."
+              title="Popular pest control products"
+              subtitle="Browse solar, ultrasonic and outdoor protection products."
               products={featured}
               to="/products"
             />
 
             <ProductRail
               eyebrow="New Arrivals"
-              title="Recently added products"
-              subtitle="Keep customers updated with fresh products."
+              title="Recently added devices"
+              subtitle="Fresh products for home, farm, garden and outdoor spaces."
               products={latest}
               to="/new-arrivals"
             />
 
             <ProductRail
               eyebrow="Best Sellers"
-              title="Popular products"
-              subtitle="Build trust with products customers prefer."
+              title="Most preferred products"
+              subtitle="Products customers are more likely to trust and buy."
               products={bestSellers}
               to="/best-sellers"
             />
@@ -211,8 +215,8 @@ const Home = () => {
         <div className="container ss-support__card">
           <div>
             <span className="ss-eyebrow">Customer Care</span>
-            <h2>Support for orders, delivery and product help.</h2>
-            <p>A clean support section makes the store feel reliable and customer-friendly.</p>
+            <h2>Need help choosing the right protection device?</h2>
+            <p>Customers can contact support for order, delivery and product usage help.</p>
           </div>
 
           <div className="ss-support__actions">

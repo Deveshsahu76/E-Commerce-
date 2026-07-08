@@ -8,12 +8,13 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const productId = product?._id || product?.id;
-  const discount = calculateDiscount(product);
-  const originalPrice = Number(product?.originalPrice || product?.mrp || 0);
+  const discount = calculateDiscount(product || {});
+  const image = getProductImage(product || {});
   const price = Number(product?.price || 0);
-  const image = getProductImage(product);
+  const originalPrice = Number(product?.originalPrice || product?.mrp || 0);
   const stock = Number(product?.stock || 0);
-  const rating = Number(product?.rating || 0);
+  const rating = Number(product?.rating || 4);
+  const description = product?.shortDescription || product?.description || "";
 
   const [saved, setSaved] = useState(false);
 
@@ -36,13 +37,13 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <article className="market-card">
-      <div className="market-card__media">
-        {discount > 0 && <span className="market-badge">{discount}% off</span>}
+    <article className="ss-product-card">
+      <div className="ss-product-card__image">
+        {discount > 0 ? <span className="ss-discount">{discount}% off</span> : null}
 
         <button
           type="button"
-          className={`market-wishlist ${saved ? "active" : ""}`}
+          className={`ss-wishlist ${saved ? "active" : ""}`}
           onClick={handleWishlist}
           aria-label="Save product"
         >
@@ -56,49 +57,55 @@ const ProductCard = ({ product }) => {
             loading="lazy"
             onError={(event) => {
               event.currentTarget.src =
-                "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=900&q=80";
+                "https://placehold.co/600x600/f5f7f2/1f4d2b?text=ShopSphere";
             }}
           />
         </Link>
       </div>
 
-      <div className="market-card__body">
-        <div className="market-card__brand">
-          <span>{product?.brand || "ShopSphere"}</span>
-          <span className={stock > 0 ? "market-stock in" : "market-stock out"}>
+      <div className="ss-product-card__body">
+        <div className="ss-product-card__meta">
+          <span>{product?.brand || "Protection Device"}</span>
+          <small className={stock > 0 ? "in" : "out"}>
             {stock > 0 ? "In stock" : "Out of stock"}
-          </span>
+          </small>
         </div>
 
-        <Link className="market-card__title" to={`/products/${productId}`}>
+        <Link className="ss-product-card__title" to={`/products/${productId}`}>
           {product?.name || "Product"}
         </Link>
 
-        <div className="market-rating">
-          <span>{"★".repeat(Math.max(1, Math.round(rating || 4)))}</span>
-          <small>{rating ? rating.toFixed(1) : "4.0"}</small>
-          <small>({Number(product?.numReviews || 0)})</small>
+        {description ? (
+          <p className="ss-product-card__desc">
+            {description}
+          </p>
+        ) : null}
+
+        <div className="ss-product-rating">
+          <span>{"★".repeat(Math.max(1, Math.min(5, Math.round(rating))))}</span>
+          <small>{rating.toFixed(1)}</small>
         </div>
 
-        <div className="market-price">
+        <div className="ss-product-price">
           <strong>{formatPrice(price)}</strong>
-          {originalPrice > price && <del>{formatPrice(originalPrice)}</del>}
+          {originalPrice > price ? <del>{formatPrice(originalPrice)}</del> : null}
         </div>
 
-        <p className="market-delivery">Fast delivery available</p>
+        <p className="ss-product-note">Suitable for outdoor protection use</p>
 
-        <div className="market-actions">
+        <div className="ss-product-actions">
           <button
             type="button"
-            className="market-btn market-btn--cart"
+            className="ss-card-btn ss-card-btn--cart"
             onClick={handleAddToCart}
             disabled={stock <= 0}
           >
             Add to Cart
           </button>
+
           <button
             type="button"
-            className="market-btn market-btn--buy"
+            className="ss-card-btn ss-card-btn--buy"
             onClick={handleBuyNow}
             disabled={stock <= 0}
           >
