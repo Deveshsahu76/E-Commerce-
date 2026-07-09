@@ -5,6 +5,46 @@ import { getToken, getUser } from "../../utils/authUtils";
 import { formatPrice } from "../../utils/money";
 import { storefrontApi } from "../../services/storefrontApi";
 
+const API_BASE =
+  process.env.REACT_APP_API_URL ||
+  "https://e-commerce-backend-1i0x.onrender.com/api";
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+const apiRequest = async (path, options = {}) => {
+  const token = getToken();
+
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "Request failed");
+  }
+
+  return data;
+};
+
 const Checkout = () => {
   const navigate = useNavigate();
   const user = getUser();
@@ -63,49 +103,145 @@ const Checkout = () => {
     return true;
   };
 
+  const buildOrderPayload = (paymentResult = null) => {
+    return {
+      orderItems: cart.map((item) => ({
+        product: item.productId || item.id,
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      shippingAddress: {
+        fullName: form.fullName,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+        state: form.state,
+        postalCode: form.postalCode,
+        country: form.country || "India",
+      },
+      paymentMethod: form.paymentMethod,
+      paymentResult,
+    };
+  };
+
+  const createFinalOrder = async (paymentResult = null) => {
+    const response = await storefrontApi.createOrder(buildOrderPayload(paymentResult));
+    return response.order || response.data || response;
+  };
+
+  const handleCodOrder = async () => {
+    const order = await createFinalOrder(null);
+    clearCart();
+
+    navigate("/order-success", {
+      state: {
+        orderId: order._id || order.id,
+        amount: order.totalPrice || order.totalAmount || summary.total,
+        method: order.paymentMethod || form.paymentMethod,
+      },
+    });
+  };
+
+  const handleOnlineOrder = async () => {
+    const scriptLoaded = await loadRazorpayScript();
+
+    if (!scriptLoaded) {
+      throw new Error("Unable to load payment gateway. Please try COD.");
+    }
+
+    const razorpayOrderData = await apiRequest("/payments/razorpay/order", {
+      method: "POST",
+      body: JSON.stringify({ amount: summary.total }),
+    });
+
+    const razorpayOrder = razorpayOrderData.order;
+    const keyId = razorpayOrderData.keyId;
+
+    if (!razorpayOrder || !keyId) {
+      throw new Error("Payment order could not be created.");
+    }
+
+    await new Promise((resolve, reject) => {
+      const options = {
+        key: keyId,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: "ShopSphere",
+        description: "Repellent Product Order",
+        order_id: razorpayOrder.id,
+        prefill: {
+          name: form.fullName,
+          email: user?.email || "",
+          contact: form.phone,
+        },
+        notes: {
+          address: form.address,
+        },
+        theme: {
+          color: "#1f7a4d",
+        },
+        handler: async (response) => {
+          try {
+            const verifyData = await apiRequest("/payments/razorpay/verify", {
+              method: "POST",
+              body: JSON.stringify(response),
+            });
+
+            const order = await createFinalOrder(verifyData.payment || response);
+
+            clearCart();
+
+            navigate("/order-success", {
+              state: {
+                orderId: order._id || order.id,
+                amount: order.totalPrice || order.totalAmount || summary.total,
+                method: "Online Payment",
+              },
+            });
+
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            reject(new Error("Payment cancelled by user."));
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    });
+  };
+
   const placeOrder = async (event) => {
     event.preventDefault();
 
     if (!validate()) return;
 
     setPlacing(true);
-    setMessage("Placing your order...");
+    setMessage("Processing your order...");
 
     try {
-      const payload = {
-        orderItems: cart.map((item) => ({
-          product: item.productId || item.id,
-          name: item.name,
-          image: item.image,
-          price: item.price,
-          quantity: item.quantity,
-        })),
-        shippingAddress: {
-          fullName: form.fullName,
-          phone: form.phone,
-          address: form.address,
-          city: form.city,
-          state: form.state,
-          postalCode: form.postalCode,
-          country: form.country || "India",
-        },
-        paymentMethod: form.paymentMethod,
-      };
-
-      const response = await storefrontApi.createOrder(payload);
-      const order = response.order || response.data || response;
-
-      clearCart();
-
-      navigate("/order-success", {
-        state: {
-          orderId: order._id || order.id,
-          amount: order.totalPrice || order.totalAmount || summary.total,
-          method: order.paymentMethod || form.paymentMethod,
-        },
-      });
+      if (form.paymentMethod === "Online Payment") {
+        await handleOnlineOrder();
+      } else {
+        await handleCodOrder();
+      }
     } catch (error) {
       setMessage(error.message || "Unable to place order.");
+
+      if (form.paymentMethod === "Online Payment") {
+        navigate("/payment-failed", {
+          state: {
+            message: error.message || "Payment failed.",
+          },
+        });
+      }
     } finally {
       setPlacing(false);
     }
@@ -175,11 +311,12 @@ const Checkout = () => {
             Payment Method
             <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
               <option>Cash on Delivery</option>
+              <option>Online Payment</option>
             </select>
           </label>
 
           <button type="submit" disabled={placing}>
-            {placing ? "Placing Order..." : "Place Order"}
+            {placing ? "Processing..." : "Place Order"}
           </button>
         </form>
 

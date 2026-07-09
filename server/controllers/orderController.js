@@ -16,6 +16,7 @@ const createOrder = async (req, res) => {
       items = [],
       shippingAddress = {},
       paymentMethod = "Cash on Delivery",
+      paymentResult = null,
     } = req.body;
 
     const cartItems = orderItems.length ? orderItems : items;
@@ -92,6 +93,11 @@ const createOrder = async (req, res) => {
     const taxPrice = 0;
     const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
+    const isOnlinePaid =
+      paymentMethod === "Online Payment" &&
+      paymentResult &&
+      paymentResult.razorpay_payment_id;
+
     const order = await Order.create({
       user: req.user._id,
       orderItems: finalItems,
@@ -106,7 +112,7 @@ const createOrder = async (req, res) => {
         country: shippingAddress.country || "India",
       },
       paymentMethod,
-      paymentStatus: paymentMethod === "Cash on Delivery" ? "Pending" : "Pending",
+      paymentStatus: isOnlinePaid ? "Paid" : "Pending",
       orderStatus: "Pending",
       status: "Pending",
       itemsPrice,
@@ -114,7 +120,9 @@ const createOrder = async (req, res) => {
       taxPrice,
       totalPrice,
       totalAmount: totalPrice,
-      isPaid: false,
+      isPaid: Boolean(isOnlinePaid),
+      paidAt: isOnlinePaid ? new Date() : null,
+      paymentResult: paymentResult || {},
     });
 
     for (const item of finalItems) {
