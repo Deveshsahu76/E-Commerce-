@@ -35,6 +35,34 @@ const getToken = () => {
   );
 };
 
+const setAdminSession = (data = {}) => {
+  const token =
+    data.token ||
+    data.accessToken ||
+    data.user?.token ||
+    data.data?.token ||
+    "";
+
+  const user = data.user || data.data?.user || data;
+
+  if (token) {
+    localStorage.setItem("token", token);
+  }
+
+  if (user) {
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+
+  return token;
+};
+
+const clearAdminSession = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("shopsphereToken");
+  localStorage.removeItem("user");
+};
+
 const request = async (path, options = {}) => {
   const token = getToken();
 
@@ -50,7 +78,31 @@ const request = async (path, options = {}) => {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.message || "Request failed");
+    throw new Error(data.message || `Request failed: ${response.status}`);
+  }
+
+  return data;
+};
+
+const adminLogin = async ({ email, password }) => {
+  const response = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "Login failed");
+  }
+
+  const token = setAdminSession(data);
+
+  if (!token) {
+    throw new Error("Login token not received from backend");
   }
 
   return data;
@@ -74,7 +126,73 @@ const getImage = (product = {}) => {
   return product.image || product.imageUrl || "";
 };
 
+const AdminLogin = ({ onLogin }) => {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setMessage("Checking admin access...");
+
+    try {
+      await adminLogin(form);
+      setMessage("");
+      onLogin();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  return (
+    <main className="admin-login-page">
+      <form className="admin-login-card" onSubmit={handleSubmit}>
+        <span>Protected Admin</span>
+        <h1>ShopSphere Admin Login</h1>
+        <p>Only the configured admin account can access product and order management.</p>
+
+        <label>
+          Admin Email
+          <input
+            type="email"
+            value={form.email}
+            onChange={(event) =>
+              setForm((prev) => ({ ...prev, email: event.target.value }))
+            }
+            required
+          />
+        </label>
+
+        <label>
+          Password
+          <input
+            type="password"
+            value={form.password}
+            onChange={(event) =>
+              setForm((prev) => ({ ...prev, password: event.target.value }))
+            }
+            required
+          />
+        </label>
+
+        <button type="submit">Login as Admin</button>
+
+        {message ? <p className="admin-alert">{message}</p> : null}
+
+        <a href="/" className="admin-back-link">
+          Back to Store
+        </a>
+      </form>
+    </main>
+  );
+};
+
 const AdminPanel = () => {
+  const [isAuthed, setIsAuthed] = useState(Boolean(getToken()));
+  const [checkingAccess, setCheckingAccess] = useState(Boolean(getToken()));
   const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -83,17 +201,34 @@ const AdminPanel = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const data = await request("/admin/products");
-      setProducts(data.products || []);
-      setMessage("");
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setLoading(false);
+  const logoutAdmin = () => {
+    clearAdminSession();
+    setIsAuthed(false);
+    setProducts([]);
+    setOrders([]);
+    setMessage("");
+  };
+
+  const handleAuthError = (error) => {
+    const text = String(error.message || "");
+
+    if (
+      text.includes("401") ||
+      text.includes("403") ||
+      text.toLowerCase().includes("admin") ||
+      text.toLowerCase().includes("token") ||
+      text.toLowerCase().includes("access")
+    ) {
+      clearAdminSession();
+      setIsAuthed(false);
     }
+
+    setMessage(text);
+  };
+
+  const loadProducts = async () => {
+    const data = await request("/admin/products");
+    setProducts(data.products || []);
   };
 
   const loadOrders = async () => {
@@ -106,13 +241,33 @@ const AdminPanel = () => {
   };
 
   const loadAll = async () => {
-    await loadProducts();
-    await loadOrders();
+    if (!getToken()) {
+      setIsAuthed(false);
+      setCheckingAccess(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMessage("");
+      await loadProducts();
+      await loadOrders();
+      setIsAuthed(true);
+    } catch (error) {
+      handleAuthError(error);
+    } finally {
+      setLoading(false);
+      setCheckingAccess(false);
+    }
   };
 
   useEffect(() => {
-    loadAll();
-  }, []);
+    if (isAuthed) {
+      loadAll();
+    } else {
+      setCheckingAccess(false);
+    }
+  }, [isAuthed]);
 
   const resetForm = () => {
     setForm(emptyProduct);
@@ -150,12 +305,14 @@ const AdminPanel = () => {
           method: "PUT",
           body: JSON.stringify(payload),
         });
+
         setMessage("Product updated successfully");
       } else {
         await request("/admin/products", {
           method: "POST",
           body: JSON.stringify(payload),
         });
+
         setMessage("Product added successfully");
       }
 
@@ -163,7 +320,7 @@ const AdminPanel = () => {
       setActiveTab("products");
       await loadProducts();
     } catch (error) {
-      setMessage(error.message);
+      handleAuthError(error);
     }
   };
 
@@ -203,7 +360,7 @@ const AdminPanel = () => {
       setMessage("Product deleted successfully");
       await loadProducts();
     } catch (error) {
-      setMessage(error.message);
+      handleAuthError(error);
     }
   };
 
@@ -217,9 +374,25 @@ const AdminPanel = () => {
       setMessage("Order status updated");
       await loadOrders();
     } catch (error) {
-      setMessage(error.message);
+      handleAuthError(error);
     }
   };
+
+  if (checkingAccess) {
+    return (
+      <main className="admin-login-page">
+        <div className="admin-login-card">
+          <span>Checking</span>
+          <h1>Verifying admin access...</h1>
+          <p>Please wait.</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!isAuthed) {
+    return <AdminLogin onLogin={() => setIsAuthed(true)} />;
+  }
 
   return (
     <main className="admin-shell">
@@ -246,6 +419,10 @@ const AdminPanel = () => {
         </button>
 
         <a href="/">Back to Store</a>
+
+        <button type="button" onClick={logoutAdmin}>
+          Logout Admin
+        </button>
       </aside>
 
       <section className="admin-main">
