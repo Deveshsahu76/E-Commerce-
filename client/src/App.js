@@ -25,7 +25,7 @@ import TrackOrder from "./pages/TrackOrder/TrackOrder";
 import OrderSuccess from "./pages/OrderSuccess/OrderSuccess";
 import PaymentFailed from "./pages/PaymentFailed/PaymentFailed";
 import NotFound from "./pages/NotFound/NotFound";
-import AdminPanel from "./pages/admin/AdminPanel";
+import AdminPanel from "./pages/Admin/AdminPanel";
 
 const StaticRoute = ({ pageKey }) => {
   const page = staticPages[pageKey];

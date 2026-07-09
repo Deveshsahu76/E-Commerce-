@@ -18,8 +18,8 @@ const requiredFiles = [
   "package.json",
   "src/App.js",
   "src/index.js",
-  "src/pages/admin/AdminPanel.jsx",
-  "src/pages/admin/admin.css",
+  "src/pages/Admin/AdminPanel.jsx",
+  "src/pages/Admin/admin.css",
 ];
 
 for (const file of requiredFiles) {
