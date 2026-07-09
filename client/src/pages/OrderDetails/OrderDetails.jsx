@@ -108,7 +108,7 @@ const OrderDetails = () => {
               <div className="checkout-items detailed">
                 {items.map((item, index) => (
                   <div key={item._id || item.product || index}>
-                    <span>{item.name || item.product?.name || "Product"} Ãƒâ€” {item.quantity || item.qty || 1}</span>
+                    <span>{item.name || item.product?.name || "Product"}  {item.quantity || item.qty || 1}</span>
                     <strong>{formatPrice(Number(item.price || 0) * Number(item.quantity || item.qty || 1))}</strong>
                   </div>
                 ))}

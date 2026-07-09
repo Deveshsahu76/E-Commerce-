@@ -4,17 +4,17 @@ import SectionTitle from "../../components/common/SectionTitle";
 
 const values = [
   {
-    icon: "Ã¢Å¡Â¡",
+    icon: "",
     title: "Fast Shopping",
     text: "Clean product discovery, quick cart flow, and checkout-ready structure.",
   },
   {
-    icon: "Ã°Å¸â€â€™",
+    icon: "",
     title: "Secure Payments",
     text: "Razorpay-ready payment flow with backend verification planned.",
   },
   {
-    icon: "Ã°Å¸â€œÂ¦",
+    icon: "",
     title: "Real Orders",
     text: "Order APIs, inventory updates, and admin controls will make it production-ready.",
   },
@@ -44,7 +44,7 @@ const About = () => {
             />
             <div className="about-floating-card">
               <strong>Production Goal</strong>
-              <span>10KÃ¢â‚¬â€œ50K visitors ready architecture</span>
+              <span>10K50K visitors ready architecture</span>
             </div>
           </div>
 

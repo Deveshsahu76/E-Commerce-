@@ -271,7 +271,7 @@ a {
 }
 
 .rep-category-list a::after {
-  content: "â†’";
+  content: "";
   color: #1f7a4d;
 }
 

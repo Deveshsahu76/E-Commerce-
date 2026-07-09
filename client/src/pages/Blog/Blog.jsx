@@ -15,7 +15,7 @@ const Blog = () => {
           <article key={p.id} className="rounded-2xl bg-white p-6 shadow">
             <h2 className="text-xl font-semibold text-slate-900">{p.title}</h2>
             <p className="mt-2 text-slate-600">{p.excerpt}</p>
-            <Link to="#" className="mt-3 inline-block text-sm font-semibold text-slate-900">Read more Ã¢â€ â€™</Link>
+            <Link to="#" className="mt-3 inline-block text-sm font-semibold text-slate-900">Read more </Link>
           </article>
         ))}
       </div>

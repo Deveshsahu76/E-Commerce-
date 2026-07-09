@@ -197,7 +197,7 @@ const ForgotPassword = () => {
 
         {step === "done" && (
           <div className="forgot-success">
-            <span className="success-icon">Ã¢Å“â€œ</span>
+            <span className="success-icon"></span>
             <h2>Password updated</h2>
             {message && <p className="info-text">{message}</p>}
             <Link className="btn btn-primary full" to="/login">

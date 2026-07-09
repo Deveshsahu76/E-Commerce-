@@ -331,7 +331,7 @@ const Checkout = () => {
                 <div>
                   <strong>{item.name}</strong>
                   <p>
-                    {item.quantity} Ãƒâ€” {formatPrice(item.price)}
+                    {item.quantity}  {formatPrice(item.price)}
                   </p>
                 </div>
               </article>

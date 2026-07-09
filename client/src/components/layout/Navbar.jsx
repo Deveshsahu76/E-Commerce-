@@ -107,7 +107,7 @@ const Navbar = () => {
           onClick={() => setMenuOpen((value) => !value)}
           aria-label="Open menu"
         >
-          Ã¢ËœÂ°
+          
         </button>
       </div>
 

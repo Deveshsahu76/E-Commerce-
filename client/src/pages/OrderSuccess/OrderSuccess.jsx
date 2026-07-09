@@ -11,7 +11,7 @@ const OrderSuccess = () => {
     <section className="page-section">
       <div className="container">
         <div className="state-card spacious success-card">
-          <span className="success-icon">Ã¢Å“â€œ</span>
+          <span className="success-icon"></span>
           <h1>Order placed successfully</h1>
           <p>Your order has been confirmed. You can track it from the My Orders section.</p>
 

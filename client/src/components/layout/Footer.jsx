@@ -52,8 +52,8 @@ const Footer = () => {
       </div>
 
       <div className="container footer-bottom">
-        <span>Ã‚Â© {new Date().getFullYear()} SonicRaksha. All rights reserved.</span>
-        <span>Secure Checkout Ã¢â‚¬Â¢ Quality Products Ã¢â‚¬Â¢ Customer Support</span>
+        <span> {new Date().getFullYear()} SonicRaksha. All rights reserved.</span>
+        <span>Secure Checkout  Quality Products  Customer Support</span>
       </div>
     </footer>
   );

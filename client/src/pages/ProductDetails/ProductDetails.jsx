@@ -135,7 +135,7 @@ const ProductDetails = () => {
             <h1>{product.name}</h1>
 
             <div className="market-detail-rating">
-              <span>{"Ã¢Ëœâ€¦".repeat(Math.max(1, Math.round(Number(product.rating || 4))))}</span>
+              <span>{"".repeat(Math.max(1, Math.round(Number(product.rating || 4))))}</span>
               <strong>{Number(product.rating || 4).toFixed(1)}</strong>
               <small>{Number(product.numReviews || 0)} reviews</small>
               <small>{Number(product.sold || 0)} sold</small>
@@ -224,7 +224,7 @@ const ProductDetails = () => {
             <div className="market-qty">
               <span>Quantity</span>
               <div>
-                <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))}>Ã¢Ë†â€™</button>
+                <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))}></button>
                 <strong>{quantity}</strong>
                 <button type="button" onClick={() => setQuantity((value) => Math.min(stock || 99, value + 1))}>+</button>
               </div>
@@ -249,7 +249,7 @@ const ProductDetails = () => {
             </button>
 
             <button type="button" className="market-btn market-btn--save full" onClick={handleWishlist}>
-              {saved ? "Ã¢â„¢Â¥ Saved to Wishlist" : "Ã¢â„¢Â¡ Add to Wishlist"}
+              {saved ? " Saved to Wishlist" : " Add to Wishlist"}
             </button>
 
             <div className="market-buy-safe">
@@ -272,7 +272,7 @@ const ProductDetails = () => {
                 <span className="market-eyebrow">Related Products</span>
                 <h2>You may also like</h2>
               </div>
-              <Link to="/products">See more Ã¢â€ â€™</Link>
+              <Link to="/products">See more </Link>
             </div>
 
             <div className="market-product-rail">

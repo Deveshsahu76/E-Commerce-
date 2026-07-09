@@ -179,7 +179,7 @@ const Products = () => {
                   type="number"
                   value={filters.minPrice}
                   onChange={(event) => updateFilter("minPrice", event.target.value)}
-                  placeholder="Ã¢â€šÂ¹ Min"
+                  placeholder=" Min"
                 />
               </label>
 
@@ -189,7 +189,7 @@ const Products = () => {
                   type="number"
                   value={filters.maxPrice}
                   onChange={(event) => updateFilter("maxPrice", event.target.value)}
-                  placeholder="Ã¢â€šÂ¹ Max"
+                  placeholder=" Max"
                 />
               </label>
             </div>

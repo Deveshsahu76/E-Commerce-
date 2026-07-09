@@ -25,7 +25,7 @@ const Cart = () => {
       <section className="page-section">
         <div className="container">
           <div className="state-card spacious">
-            <span className="empty-icon">Ã°Å¸â€ºâ€™</span>
+            <span className="empty-icon"></span>
             <h1>Your cart is empty</h1>
             <p>Explore products and add your favourites to start shopping.</p>
             <Link className="btn btn-primary" to="/products">Shop Products</Link>
@@ -71,7 +71,7 @@ const Cart = () => {
                     type="button"
                     onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
                   >
-                    Ã¢Ë†â€™
+                    
                   </button>
                   <strong>{item.quantity}</strong>
                   <button
