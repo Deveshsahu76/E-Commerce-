@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="container sonic-footer__grid">
         <div className="sonic-footer__brand">
           <div className="sonic-footer__logo">
-            <img src="/SonicRaksha.png" alt="SonicRaksha" />
+            <img src="/sonicraksha-logo.png" alt="SonicRaksha" />
           </div>
 
           <h2>SonicRaksha</h2>

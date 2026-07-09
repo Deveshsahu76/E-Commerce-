@@ -1,6 +1,6 @@
-# ShopSphere - MERN E-Commerce Platform
+# SonicRaksha - MERN E-Commerce Platform
 
-ShopSphere is a full-stack MERN e-commerce web application built with a modern shopping UI, product discovery, cart management, checkout flow, authentication, order tracking, Razorpay-ready payments, and scalable backend APIs.
+SonicRaksha is a full-stack MERN e-commerce web application built with a modern shopping UI, product discovery, cart management, checkout flow, authentication, order tracking, Razorpay-ready payments, and scalable backend APIs.
 
 ## Live Links
 
@@ -80,41 +80,41 @@ The application includes a React frontend deployed on Vercel and an Express/Mong
 
 ```txt
 E-Commerce-
-├── client
-│   ├── public
-│   ├── src
-│   │   ├── components
-│   │   │   ├── common
-│   │   │   └── layout
-│   │   ├── pages
-│   │   │   ├── About
-│   │   │   ├── Cart
-│   │   │   ├── Checkout
-│   │   │   ├── Contact
-│   │   │   ├── Home
-│   │   │   ├── Login
-│   │   │   ├── OrderDetails
-│   │   │   ├── Orders
-│   │   │   ├── ProductDetails
-│   │   │   ├── Products
-│   │   │   └── Register
-│   │   ├── services
-│   │   ├── utils
-│   │   ├── App.js
-│   │   └── index.css
-│   └── package.json
-│
-├── server
-│   ├── config
-│   ├── controllers
-│   ├── middleware
-│   ├── models
-│   ├── routes
-│   ├── scripts
-│   ├── app.js
-│   ├── server.js
-│   └── package.json
-│
-├── .gitignore
-├── .gitattributes
-└── README.md﻿# E-Commerce-
+â”œâ”€â”€ client
+â”‚   â”œâ”€â”€ public
+â”‚   â”œâ”€â”€ src
+â”‚   â”‚   â”œâ”€â”€ components
+â”‚   â”‚   â”‚   â”œâ”€â”€ common
+â”‚   â”‚   â”‚   â””â”€â”€ layout
+â”‚   â”‚   â”œâ”€â”€ pages
+â”‚   â”‚   â”‚   â”œâ”€â”€ About
+â”‚   â”‚   â”‚   â”œâ”€â”€ Cart
+â”‚   â”‚   â”‚   â”œâ”€â”€ Checkout
+â”‚   â”‚   â”‚   â”œâ”€â”€ Contact
+â”‚   â”‚   â”‚   â”œâ”€â”€ Home
+â”‚   â”‚   â”‚   â”œâ”€â”€ Login
+â”‚   â”‚   â”‚   â”œâ”€â”€ OrderDetails
+â”‚   â”‚   â”‚   â”œâ”€â”€ Orders
+â”‚   â”‚   â”‚   â”œâ”€â”€ ProductDetails
+â”‚   â”‚   â”‚   â”œâ”€â”€ Products
+â”‚   â”‚   â”‚   â””â”€â”€ Register
+â”‚   â”‚   â”œâ”€â”€ services
+â”‚   â”‚   â”œâ”€â”€ utils
+â”‚   â”‚   â”œâ”€â”€ App.js
+â”‚   â”‚   â””â”€â”€ index.css
+â”‚   â””â”€â”€ package.json
+â”‚
+â”œâ”€â”€ server
+â”‚   â”œâ”€â”€ config
+â”‚   â”œâ”€â”€ controllers
+â”‚   â”œâ”€â”€ middleware
+â”‚   â”œâ”€â”€ models
+â”‚   â”œâ”€â”€ routes
+â”‚   â”œâ”€â”€ scripts
+â”‚   â”œâ”€â”€ app.js
+â”‚   â”œâ”€â”€ server.js
+â”‚   â””â”€â”€ package.json
+â”‚
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ .gitattributes
+â””â”€â”€ README.mdï»¿# E-Commerce-
