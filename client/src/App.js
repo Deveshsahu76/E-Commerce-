@@ -1,8 +1,11 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import InfoPage from "./components/common/InfoPage";
+
 import { staticPages } from "./data/staticPageData";
+
 import Home from "./pages/Home/Home";
 import Products from "./pages/Products/Products";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
@@ -23,59 +26,83 @@ import OrderSuccess from "./pages/OrderSuccess/OrderSuccess";
 import PaymentFailed from "./pages/PaymentFailed/PaymentFailed";
 import NotFound from "./pages/NotFound/NotFound";
 import AdminPanel from "./pages/admin/AdminPanel";
+
 const StaticRoute = ({ pageKey }) => {
   const page = staticPages[pageKey];
+
+  if (!page) {
+    return <NotFound />;
+  }
+
   return <InfoPage {...page} />;
 };
 
-function App() {
+const StorefrontLayout = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
   return (
-    <BrowserRouter>
-      <div className="app-shell">
-        <Navbar />
-        <main className="site-main">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/products/:id" element={<ProductDetails />} />
-            <Route path="/search" element={<SearchResults />} />
+    <>
+      {!isAdminRoute ? <Navbar /> : null}
 
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/orders/:id" element={<OrderDetails />} />
-            <Route path="/order-success" element={<OrderSuccess />} />
-            <Route path="/payment-failed" element={<PaymentFailed />} />
-            <Route path="/track-order" element={<TrackOrder />} />
-
-            <Route path="/offers" element={<CollectionPage type="offers" />} />
-            <Route path="/new-arrivals" element={<CollectionPage type="new-arrivals" />} />
-            <Route path="/best-sellers" element={<CollectionPage type="best-sellers" />} />
-
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/about" element={<StaticRoute pageKey="about" />} />
-            <Route path="/faq" element={<StaticRoute pageKey="faq" />} />
-            <Route path="/shipping-policy" element={<StaticRoute pageKey="shipping" />} />
-            <Route path="/return-refund-policy" element={<StaticRoute pageKey="returns" />} />
-            <Route path="/privacy-policy" element={<StaticRoute pageKey="privacy" />} />
-            <Route path="/terms-conditions" element={<StaticRoute pageKey="terms" />} />
-            <Route path="/cancellation-policy" element={<StaticRoute pageKey="cancellation" />} />
+      <Routes>
         <Route path="/admin/*" element={<AdminPanel />} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+        <Route path="/" element={<Home />} />
+
+        <Route path="/products" element={<Products />} />
+        <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/order/:id" element={<OrderDetails />} />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        <Route path="/wishlist" element={<Wishlist />} />
+
+        <Route path="/search" element={<SearchResults />} />
+        <Route path="/collection/:slug" element={<CollectionPage />} />
+        <Route path="/collections/:slug" element={<CollectionPage />} />
+        <Route path="/offers" element={<Products />} />
+        <Route path="/new-arrivals" element={<Products />} />
+        <Route path="/best-sellers" element={<Products />} />
+
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/track-order" element={<TrackOrder />} />
+
+        <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
+
+        <Route path="/about" element={<StaticRoute pageKey="about" />} />
+        <Route path="/faq" element={<StaticRoute pageKey="faq" />} />
+        <Route path="/shipping" element={<StaticRoute pageKey="shipping" />} />
+        <Route path="/returns" element={<StaticRoute pageKey="returns" />} />
+        <Route path="/privacy" element={<StaticRoute pageKey="privacy" />} />
+        <Route path="/terms" element={<StaticRoute pageKey="terms" />} />
+        <Route path="/cancellation" element={<StaticRoute pageKey="cancellation" />} />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
+      {!isAdminRoute ? <Footer /> : null}
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <StorefrontLayout />
     </BrowserRouter>
   );
-}
+};
 
 export default App;
