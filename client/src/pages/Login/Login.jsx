@@ -62,10 +62,6 @@ const Login = () => {
             {errors.password ? <small>{errors.password.message}</small> : null}
           </label>
 
-          <div className="auth-row">
-            <Link to="/forgot-password">Forgot password?</Link>
-          </div>
-
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Signing in..." : "Login"}
           </button>
@@ -73,6 +69,10 @@ const Login = () => {
 
         <p className="auth-switch">
           New here? <Link to="/register">Create an account</Link>
+        </p>
+
+        <p className="auth-switch">
+          Password reset is available through customer support.
         </p>
       </section>
     </main>

@@ -1,6 +1,6 @@
 export const storefrontContent = {
   hero: {
-    eyebrow: "Snake Repellent • Solar Pest Control • Outdoor Protection",
+    eyebrow: "Snake Repellent Ã¢â‚¬Â¢ Solar Pest Control Ã¢â‚¬Â¢ Outdoor Protection",
     title: "Snake & Pest Repellent Products",
     subtitle:
       "Shop solar snake repellers, ultrasonic pest repellers, rodent control devices and outdoor protection products.",

@@ -1,4 +1,4 @@
-# ShopSphere - Client Handover
+# SonicRaksha - Client Handover
 
 ## Project Type
 Focused e-commerce store for Snake Repellent, Solar Pest Repellent, Ultrasonic Pest Repeller, Rodent Control and Outdoor Protection products.

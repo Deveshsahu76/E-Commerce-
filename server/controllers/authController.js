@@ -16,10 +16,10 @@ const buildOtpEmail = ({ name, otp }) => {
   const safeName = name || "Customer";
 
   return {
-    subject: "ShopSphere Password Reset OTP",
+    subject: "SonicRaksha Password Reset OTP",
     text: `Hello ${safeName},
 
-Your ShopSphere password reset OTP is ${otp}.
+Your SonicRaksha password reset OTP is ${otp}.
 
 This OTP is valid for ${OTP_EXPIRY_MINUTES} minutes.
 
@@ -27,9 +27,9 @@ If you did not request this, please ignore this email.`,
 
     html: `
       <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:24px;border:1px solid #e5eee2;border-radius:18px">
-        <h2 style="margin:0 0 10px;color:#14213d">ShopSphere Password Reset OTP</h2>
+        <h2 style="margin:0 0 10px;color:#14213d">SonicRaksha Password Reset OTP</h2>
         <p>Hello ${safeName},</p>
-        <p>Use the OTP below to reset your ShopSphere account password.</p>
+        <p>Use the OTP below to reset your SonicRaksha account password.</p>
         <div style="font-size:30px;font-weight:900;letter-spacing:6px;background:#f7faf5;color:#1f7a4d;padding:18px;border-radius:14px;text-align:center">
           ${otp}
         </div>

@@ -1,9 +1,9 @@
 export const staticPages = {
   about: {
-    eyebrow: "About ShopSphere",
+    eyebrow: "About SonicRaksha",
     title: "A trusted shopping experience built for everyday customers.",
     intro:
-      "ShopSphere helps customers discover quality products, exciting offers, and a smooth ordering experience with secure checkout and reliable support.",
+      "SonicRaksha helps customers discover quality products, exciting offers, and a smooth ordering experience with secure checkout and reliable support.",
     sections: [
       {
         title: "Our Promise",

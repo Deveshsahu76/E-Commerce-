@@ -1,6 +1,6 @@
 import { getProductImage } from "./money";
 
-const WISHLIST_KEY = "shopsphere_wishlist";
+const WISHLIST_KEY = "SonicRaksha_wishlist";
 
 const normalizeItem = (product = {}) => {
   const id = product._id || product.id || product.productId;

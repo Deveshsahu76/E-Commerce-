@@ -1,5 +1,5 @@
-const USER_KEY = "shopSphereUser";
-const TOKEN_KEY = "shopSphereToken";
+const USER_KEY = "SonicRakshaUser";
+const TOKEN_KEY = "SonicRakshaToken";
 
 export const getAuthUser = () => {
   try {

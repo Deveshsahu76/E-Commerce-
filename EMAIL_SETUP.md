@@ -1,4 +1,4 @@
-# ShopSphere Email Setup
+# SonicRaksha Email Setup
 
 ## Features Enabled
 
@@ -15,7 +15,7 @@ SMTP_PORT=587
 SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
-SMTP_FROM=ShopSphere <your-email@gmail.com>
+SMTP_FROM=SonicRaksha <your-email@gmail.com>
 ADMIN_NOTIFY_EMAIL=admin-email@example.com
 
 Recommended also keep:

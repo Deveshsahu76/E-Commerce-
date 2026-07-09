@@ -1,7 +1,7 @@
 {
   "name": "mern-ecommerce-server",
   "version": "1.0.0",
-  "description": "ShopSphere backend API for MERN E-Commerce Store",
+  "description": "SonicRaksha backend API for MERN E-Commerce Store",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

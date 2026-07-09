@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://e-commerce-nu-bay.vercel.app/</loc>
+    <priority>1.00</priority>
   </url>
   <url>
     <loc>https://e-commerce-nu-bay.vercel.app/products</loc>
-  </url>
-  <url>
-    <loc>https://e-commerce-nu-bay.vercel.app/offers</loc>
-  </url>
-  <url>
-    <loc>https://e-commerce-nu-bay.vercel.app/new-arrivals</loc>
-  </url>
-  <url>
-    <loc>https://e-commerce-nu-bay.vercel.app/best-sellers</loc>
-  </url>
-  <url>
-    <loc>https://e-commerce-nu-bay.vercel.app/contact</loc>
+    <priority>0.90</priority>
   </url>
   <url>
     <loc>https://e-commerce-nu-bay.vercel.app/support</loc>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://e-commerce-nu-bay.vercel.app/track-order</loc>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://e-commerce-nu-bay.vercel.app/login</loc>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://e-commerce-nu-bay.vercel.app/register</loc>
+    <priority>0.50</priority>
   </url>
 </urlset>

@@ -62,29 +62,29 @@ const buildCustomerOrderEmail = (order = {}) => {
   const customerName = getCustomerName(order);
 
   return {
-    subject: `ShopSphere Order Confirmed - ${String(orderId).slice(-8)}`,
+    subject: `SonicRaksha Order Confirmed - ${String(orderId).slice(-8)}`,
     text: `Hello ${customerName},
 
-Your ShopSphere order has been placed successfully.
+Your SonicRaksha order has been placed successfully.
 
 Order ID: ${orderId}
 Status: ${status}
 Total: ${formatPrice(total)}
 
-Thank you for shopping with ShopSphere.`,
+Thank you for shopping with SonicRaksha.`,
 
     html: `
       <div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:24px;border:1px solid #e5eee2;border-radius:18px">
         <h2 style="margin:0 0 10px;color:#14213d">Order placed successfully</h2>
         <p>Hello ${customerName},</p>
-        <p>Your ShopSphere order has been placed successfully.</p>
+        <p>Your SonicRaksha order has been placed successfully.</p>
         <div style="background:#f7faf5;border-radius:14px;padding:16px;margin:18px 0">
           <p style="margin:0 0 8px"><b>Order ID:</b> ${orderId}</p>
           <p style="margin:0 0 8px"><b>Status:</b> ${status}</p>
           <p style="margin:0"><b>Total:</b> ${formatPrice(total)}</p>
         </div>
         ${getOrderItemsHtml(order)}
-        <p style="margin-top:18px;color:#5f6f63">Thank you for shopping with ShopSphere.</p>
+        <p style="margin-top:18px;color:#5f6f63">Thank you for shopping with SonicRaksha.</p>
       </div>
     `,
   };
@@ -97,7 +97,7 @@ const buildAdminOrderEmail = (order = {}) => {
   const total = getOrderTotal(order);
 
   return {
-    subject: `New ShopSphere Order - ${String(orderId).slice(-8)}`,
+    subject: `New SonicRaksha Order - ${String(orderId).slice(-8)}`,
     text: `New order received.
 
 Order ID: ${orderId}

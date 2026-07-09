@@ -43,7 +43,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
 
   const transporter = getTransporter();
 
-  const from = process.env.SMTP_FROM || `ShopSphere <${process.env.SMTP_USER}>`;
+  const from = process.env.SMTP_FROM || `SonicRaksha <${process.env.SMTP_USER}>`;
 
   const info = await transporter.sendMail({
     from,

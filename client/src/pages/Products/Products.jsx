@@ -134,7 +134,7 @@ const Products = () => {
       <div className="container">
         <div className="market-listing-hero">
           <div>
-            <span className="market-eyebrow">ShopSphere Marketplace</span>
+            <span className="market-eyebrow">SonicRaksha Marketplace</span>
             <h1>{keywordText}</h1>
             <p>Browse products with quick filters, clear pricing, delivery support and smooth checkout.</p>
           </div>
@@ -179,7 +179,7 @@ const Products = () => {
                   type="number"
                   value={filters.minPrice}
                   onChange={(event) => updateFilter("minPrice", event.target.value)}
-                  placeholder="₹ Min"
+                  placeholder="Ã¢â€šÂ¹ Min"
                 />
               </label>
 
@@ -189,7 +189,7 @@ const Products = () => {
                   type="number"
                   value={filters.maxPrice}
                   onChange={(event) => updateFilter("maxPrice", event.target.value)}
-                  placeholder="₹ Max"
+                  placeholder="Ã¢â€šÂ¹ Max"
                 />
               </label>
             </div>

@@ -1,4 +1,4 @@
-# Final Testing Checklist - ShopSphere
+# Final Testing Checklist - SonicRaksha
 
 ## Customer Website
 

@@ -5,14 +5,14 @@ const rawBase =
 const API_BASE = rawBase.endsWith("/api") ? rawBase : `${rawBase}/api`;
 
 export const getAdminToken = () => {
-  const directKeys = ["token", "authToken", "shopsphereToken", "userToken"];
+  const directKeys = ["token", "authToken", "SonicRakshaToken", "userToken"];
 
   for (const key of directKeys) {
     const value = localStorage.getItem(key);
     if (value) return value;
   }
 
-  const possibleUserKeys = ["user", "currentUser", "shopsphereUser"];
+  const possibleUserKeys = ["user", "currentUser", "SonicRakshaUser"];
 
   for (const key of possibleUserKeys) {
     try {
@@ -43,11 +43,11 @@ export const setAdminSession = (data = {}) => {
 export const clearAdminSession = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("authToken");
-  localStorage.removeItem("shopsphereToken");
+  localStorage.removeItem("SonicRakshaToken");
   localStorage.removeItem("userToken");
   localStorage.removeItem("user");
   localStorage.removeItem("currentUser");
-  localStorage.removeItem("shopsphereUser");
+  localStorage.removeItem("SonicRakshaUser");
 };
 
 export const adminRequest = async (path, options = {}) => {

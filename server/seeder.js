@@ -1,4 +1,4 @@
-﻿const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const Product = require("./models/Product");
 const Category = require("./models/Category");

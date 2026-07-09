@@ -43,7 +43,7 @@ app.use("/api/admin", adminRoutes);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "ShopSphere API Running Successfully",
+    message: "SonicRaksha API Running Successfully",
   });
 });
 

@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
 
     brand: {
       type: String,
-      default: "ShopSphere",
+      default: "SonicRaksha",
       trim: true,
     },
 

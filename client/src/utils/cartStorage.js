@@ -1,4 +1,4 @@
-const CART_KEY = "shopsphere_cart";
+const CART_KEY = "SonicRaksha_cart";
 
 export const getCartItems = () => {
   try {

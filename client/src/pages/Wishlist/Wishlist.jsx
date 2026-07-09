@@ -28,7 +28,7 @@ const Wishlist = () => {
 
         {!items.length ? (
           <div className="state-card spacious">
-            <span className="empty-icon">♡</span>
+            <span className="empty-icon">Ã¢â„¢Â¡</span>
             <h2>Your wishlist is empty</h2>
             <p>Save products you like and view them here later.</p>
             <Link className="btn btn-primary" to="/products">Explore Products</Link>

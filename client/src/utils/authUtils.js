@@ -1,5 +1,5 @@
-const TOKEN_KEYS = ["shopSphereToken", "token"];
-const USER_KEY = "shopSphereUser";
+const TOKEN_KEYS = ["SonicRakshaToken", "token"];
+const USER_KEY = "SonicRakshaUser";
 
 export const getToken = () => {
   for (const key of TOKEN_KEYS) {
@@ -25,7 +25,7 @@ export const saveAuth = (payload = {}) => {
     payload;
 
   if (token) {
-    localStorage.setItem("shopSphereToken", token);
+    localStorage.setItem("SonicRakshaToken", token);
     localStorage.setItem("token", token);
   }
 

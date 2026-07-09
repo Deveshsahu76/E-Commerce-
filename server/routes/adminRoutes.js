@@ -90,7 +90,7 @@ const normalizeProductPayload = (body = {}) => {
 
   const payload = {
     name: body.name,
-    brand: body.brand || "ShopSphere",
+    brand: body.brand || "SonicRaksha",
     category: body.category || "Snake Repeller",
     price: Number(body.price || 0),
     originalPrice: Number(body.originalPrice || body.mrp || 0),

@@ -41,7 +41,7 @@ router.post("/razorpay/order", protect, async (req, res) => {
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
       notes: {
-        app: "ShopSphere",
+        app: "SonicRaksha",
         userId: String(req.user?._id || ""),
       },
     });

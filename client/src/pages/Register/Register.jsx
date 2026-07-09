@@ -75,7 +75,7 @@ const Register = () => {
     <section className="auth-page page-section">
       <div className="auth-card">
         <span className="eyebrow">Create Account</span>
-        <h1>Start shopping with ShopSphere</h1>
+        <h1>Start shopping with SonicRaksha</h1>
         <p>Create your account to place orders and track purchases easily.</p>
 
         <form onSubmit={handleSubmit}>

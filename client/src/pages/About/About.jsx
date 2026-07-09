@@ -4,17 +4,17 @@ import SectionTitle from "../../components/common/SectionTitle";
 
 const values = [
   {
-    icon: "⚡",
+    icon: "Ã¢Å¡Â¡",
     title: "Fast Shopping",
     text: "Clean product discovery, quick cart flow, and checkout-ready structure.",
   },
   {
-    icon: "🔒",
+    icon: "Ã°Å¸â€â€™",
     title: "Secure Payments",
     text: "Razorpay-ready payment flow with backend verification planned.",
   },
   {
-    icon: "📦",
+    icon: "Ã°Å¸â€œÂ¦",
     title: "Real Orders",
     text: "Order APIs, inventory updates, and admin controls will make it production-ready.",
   },
@@ -25,10 +25,10 @@ const About = () => {
     <main>
       <section className="page-hero">
         <div className="container page-hero__inner">
-          <span className="eyebrow">About ShopSphere</span>
+          <span className="eyebrow">About SonicRaksha</span>
           <h1>A modern MERN e-commerce experience.</h1>
           <p>
-            ShopSphere is built as a scalable full-stack e-commerce platform with
+            SonicRaksha is built as a scalable full-stack e-commerce platform with
             product browsing, cart management, checkout flow, authentication, and
             payment-ready architecture.
           </p>
@@ -44,7 +44,7 @@ const About = () => {
             />
             <div className="about-floating-card">
               <strong>Production Goal</strong>
-              <span>10K–50K visitors ready architecture</span>
+              <span>10KÃ¢â‚¬â€œ50K visitors ready architecture</span>
             </div>
           </div>
 

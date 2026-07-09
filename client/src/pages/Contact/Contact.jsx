@@ -48,7 +48,7 @@ const Contact = () => {
             <h2>Store Support</h2>
             <p>Use these contact details as placeholders and update them with client information before final handover.</p>
             <div className="support-lines">
-              <span>Email: support@shopsphere.com</span>
+              <span>Email: support@SonicRaksha.com</span>
               <span>Phone: +91 00000 00000</span>
               <span>WhatsApp: Add client number</span>
               <span>Address: Add store address</span>

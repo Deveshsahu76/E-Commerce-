@@ -1,7 +1,7 @@
 import { getProductImage } from "./money";
 
-const CART_KEY = "shopsphere_cart";
-const LEGACY_KEYS = ["shopSphereCart", "cart"];
+const CART_KEY = "SonicRaksha_cart";
+const LEGACY_KEYS = ["SonicRakshaCart", "cart"];
 
 const normalizeItem = (item = {}) => {
   const product = item.product && typeof item.product === "object" ? item.product : item;

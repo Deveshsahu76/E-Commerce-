@@ -8,7 +8,7 @@ const API_BASE =
 const emptyProduct = {
   name: "",
   category: "Snake Repeller",
-  brand: "ShopSphere",
+  brand: "SonicRaksha",
   price: "",
   originalPrice: "",
   stock: "",
@@ -30,7 +30,7 @@ const getToken = () => {
   return (
     localStorage.getItem("token") ||
     localStorage.getItem("authToken") ||
-    localStorage.getItem("shopsphereToken") ||
+    localStorage.getItem("SonicRakshaToken") ||
     ""
   );
 };
@@ -59,7 +59,7 @@ const setAdminSession = (data = {}) => {
 const clearAdminSession = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("authToken");
-  localStorage.removeItem("shopsphereToken");
+  localStorage.removeItem("SonicRakshaToken");
   localStorage.removeItem("user");
 };
 
@@ -151,7 +151,7 @@ const AdminLogin = ({ onLogin }) => {
     <main className="admin-login-page">
       <form className="admin-login-card" onSubmit={handleSubmit}>
         <span>Protected Admin</span>
-        <h1>ShopSphere Admin Login</h1>
+        <h1>SonicRaksha Admin Login</h1>
         <p>Only the configured admin account can access product and order management.</p>
 
         <label>
@@ -330,7 +330,7 @@ const AdminPanel = () => {
     setForm({
       name: product.name || "",
       category: product.category || "Snake Repeller",
-      brand: product.brand || "ShopSphere",
+      brand: product.brand || "SonicRaksha",
       price: product.price || "",
       originalPrice: product.originalPrice || product.mrp || "",
       stock: product.stock || "",
@@ -398,9 +398,9 @@ const AdminPanel = () => {
     <main className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          <span>S</span>
+          <span className="brand-logo-img-wrap"><img src="/sonicraksha-logo.png" alt="SonicRaksha" /></span>
           <div>
-            <strong>ShopSphere</strong>
+            <strong>SonicRaksha</strong>
             <small>Admin Panel</small>
           </div>
         </div>
@@ -428,7 +428,7 @@ const AdminPanel = () => {
       <section className="admin-main">
         <header className="admin-topbar">
           <div>
-            <span>Repellent Store</span>
+            <span>Smart Protection for Home & Farm</span>
             <h1>Admin Management</h1>
           </div>
 

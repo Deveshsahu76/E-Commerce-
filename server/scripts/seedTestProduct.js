@@ -44,7 +44,7 @@ const run = async () => {
         images: [
           "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
         ],
-        brand: "ShopSphere",
+        brand: "SonicRaksha",
         rating: 4.5,
         numReviews: 12,
         sold: 0,

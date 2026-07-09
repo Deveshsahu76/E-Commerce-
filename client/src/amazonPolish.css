@@ -271,7 +271,7 @@ a {
 }
 
 .rep-category-list a::after {
-  content: "→";
+  content: "â†’";
   color: #1f7a4d;
 }
 
@@ -1186,5 +1186,53 @@ a {
   .checkout-form-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+.auth-primary-link {
+  min-height: 46px;
+  border-radius: 999px;
+  padding: 0 18px;
+  background: #1f7a4d;
+  color: #ffffff;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  margin-top: 12px;
+  width: 100%;
+}
+
+
+/* =====================================================
+   SonicRaksha Branding
+===================================================== */
+
+.brand-logo-img-wrap {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  color: transparent !important;
+  padding: 0 !important;
+  box-shadow: 0 8px 22px rgba(20, 33, 61, 0.12);
+}
+
+.brand-logo-img-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+.admin-brand .brand-logo-img-wrap {
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
 }
 

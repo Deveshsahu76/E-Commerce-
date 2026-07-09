@@ -168,8 +168,8 @@ const Checkout = () => {
         key: keyId,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
-        name: "ShopSphere",
-        description: "Repellent Product Order",
+        name: "SonicRaksha",
+        description: "SonicRaksha Product Order",
         order_id: razorpayOrder.id,
         prefill: {
           name: form.fullName,
@@ -331,7 +331,7 @@ const Checkout = () => {
                 <div>
                   <strong>{item.name}</strong>
                   <p>
-                    {item.quantity} × {formatPrice(item.price)}
+                    {item.quantity} Ãƒâ€” {formatPrice(item.price)}
                   </p>
                 </div>
               </article>

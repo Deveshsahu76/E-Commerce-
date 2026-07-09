@@ -8,7 +8,7 @@ const Footer = () => {
           <Link className="brand footer-logo" to="/">
             <span className="brand-mark">S</span>
             <span>
-              <strong>ShopSphere</strong>
+              <strong>SonicRaksha</strong>
               <small>Premium Store</small>
             </span>
           </Link>
@@ -52,8 +52,8 @@ const Footer = () => {
       </div>
 
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} ShopSphere. All rights reserved.</span>
-        <span>Secure Checkout • Quality Products • Customer Support</span>
+        <span>Ã‚Â© {new Date().getFullYear()} SonicRaksha. All rights reserved.</span>
+        <span>Secure Checkout Ã¢â‚¬Â¢ Quality Products Ã¢â‚¬Â¢ Customer Support</span>
       </div>
     </footer>
   );

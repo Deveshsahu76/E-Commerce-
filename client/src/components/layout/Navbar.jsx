@@ -63,10 +63,10 @@ const Navbar = () => {
     <header className="rep-header">
       <div className="rep-container rep-header__inner">
         <Link to="/" className="rep-logo" onClick={closeMenu}>
-          <span>S</span>
+          <span className="brand-logo-img-wrap"><img src="/sonicraksha-logo.png" alt="SonicRaksha" /></span>
           <div>
-            <strong>ShopSphere</strong>
-            <small>Repellent Store</small>
+            <strong>SonicRaksha</strong>
+            <small>Smart Protection for Home & Farm</small>
           </div>
         </Link>
 
@@ -107,7 +107,7 @@ const Navbar = () => {
           onClick={() => setMenuOpen((value) => !value)}
           aria-label="Open menu"
         >
-          ☰
+          Ã¢ËœÂ°
         </button>
       </div>
 
