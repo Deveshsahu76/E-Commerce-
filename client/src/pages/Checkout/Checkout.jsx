@@ -1,351 +1,225 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
 import { clearCart, getCartSummary } from "../../utils/cartUtils";
+import { getToken, getUser } from "../../utils/authUtils";
 import { formatPrice } from "../../utils/money";
-import { getToken } from "../../utils/authUtils";
 import { storefrontApi } from "../../services/storefrontApi";
-
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [summary, setSummary] = useState(getCartSummary());
-  const [paymentMethod, setPaymentMethod] = useState("cod");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const user = getUser();
+
+  const summary = useMemo(() => getCartSummary(), []);
+  const cart = summary.cart || [];
+
   const [form, setForm] = useState({
-    fullName: "",
-    phone: "",
-    email: "",
+    fullName: user?.name || "",
+    phone: user?.phone || "",
     address: "",
     city: "",
     state: "",
     postalCode: "",
     country: "India",
+    paymentMethod: "Cash on Delivery",
   });
 
-  useEffect(() => {
-    if (!getToken()) {
-      navigate("/login", { state: { from: location.pathname } });
-    }
-  }, [navigate, location.pathname]);
+  const [message, setMessage] = useState("");
+  const [placing, setPlacing] = useState(false);
 
-  useEffect(() => {
-    setSummary(getCartSummary());
-  }, []);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
 
-  const orderPayload = useMemo(() => {
-    const orderItems = summary.cart.map((item) => ({
-      product: item.productId || item.id,
-      productId: item.productId || item.id,
-      name: item.name,
-      image: item.image,
-      price: item.price,
-      quantity: item.quantity,
-      qty: item.quantity,
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
     }));
-
-    return {
-      orderItems,
-      items: orderItems,
-      shippingAddress: {
-        fullName: form.fullName,
-        phone: form.phone,
-        email: form.email,
-        address: form.address,
-        addressLine1: form.address,
-        city: form.city,
-        state: form.state,
-        postalCode: form.postalCode,
-        country: form.country,
-      },
-      paymentMethod: paymentMethod === "online" ? "Razorpay" : "Cash on Delivery",
-      itemsPrice: summary.subtotal,
-      shippingPrice: summary.deliveryFee,
-      taxPrice: 0,
-      discountPrice: summary.discount,
-      totalPrice: summary.total,
-      totalAmount: summary.total,
-    };
-  }, [summary, form, paymentMethod]);
-
-  const updateForm = (key, value) => {
-    setForm((current) => ({ ...current, [key]: value }));
   };
 
   const validate = () => {
-    if (!summary.cart.length) return "Your cart is empty.";
-    if (!form.fullName.trim()) return "Please enter your full name.";
-    if (!form.phone.trim()) return "Please enter your phone number.";
-    if (!form.email.trim()) return "Please enter your email.";
-    if (!form.address.trim()) return "Please enter your delivery address.";
-    if (!form.city.trim()) return "Please enter your city.";
-    if (!form.state.trim()) return "Please enter your state.";
-    if (!form.postalCode.trim()) return "Please enter your postal code.";
-    return "";
-  };
-
-  const placeCodOrder = async () => {
-    const response = await storefrontApi.createOrder(orderPayload);
-    clearCart();
-
-    const order = response?.order || response?.data || response;
-
-    navigate("/order-success", {
-      state: {
-        orderId: order?._id || order?.id || response?.orderId,
-        amount: summary.total,
-        method: "Cash on Delivery",
-      },
-    });
-  };
-
-  const placeOnlineOrder = async () => {
-    const scriptLoaded = await loadRazorpayScript();
-
-    if (!scriptLoaded) {
-      navigate("/payment-failed", { state: { reason: "Unable to open secure payment window." } });
-      return;
+    if (!getToken()) {
+      navigate("/login", { state: { from: "/checkout" } });
+      return false;
     }
 
-    const key = process.env.REACT_APP_RAZORPAY_KEY_ID;
-
-    if (!key) {
-      navigate("/payment-failed", { state: { reason: "Payment configuration is not available." } });
-      return;
+    if (!cart.length) {
+      setMessage("Your cart is empty.");
+      return false;
     }
 
-    const paymentOrderResponse = await storefrontApi.createRazorpayOrder({
-      amount: summary.total,
-      currency: "INR",
-      orderPayload,
-    });
+    const required = ["fullName", "phone", "address", "city", "state", "postalCode"];
 
-    const razorpayOrder =
-      paymentOrderResponse?.razorpayOrder ||
-      paymentOrderResponse?.order ||
-      paymentOrderResponse?.data ||
-      paymentOrderResponse;
+    for (const key of required) {
+      if (!String(form[key] || "").trim()) {
+        setMessage("Please fill all shipping details.");
+        return false;
+      }
+    }
 
-    const options = {
-      key,
-      amount: razorpayOrder?.amount,
-      currency: razorpayOrder?.currency || "INR",
-      name: "ShopSphere",
-      description: "Secure checkout",
-      order_id: razorpayOrder?.id || razorpayOrder?.orderId,
-      prefill: {
-        name: form.fullName,
-        email: form.email,
-        contact: form.phone,
-      },
-      handler: async (response) => {
-        try {
-          const verifyResponse = await storefrontApi.verifyPayment({
-            ...response,
-            orderPayload,
-          });
+    if (String(form.phone).trim().length < 10) {
+      setMessage("Please enter a valid phone number.");
+      return false;
+    }
 
-          clearCart();
-
-          const order = verifyResponse?.order || verifyResponse?.data || verifyResponse;
-
-          navigate("/order-success", {
-            state: {
-              orderId: order?._id || order?.id || verifyResponse?.orderId,
-              amount: summary.total,
-              method: "Online Payment",
-            },
-          });
-        } catch (paymentError) {
-          navigate("/payment-failed", {
-            state: { reason: paymentError.message || "Payment verification failed." },
-          });
-        }
-      },
-      modal: {
-        ondismiss: () => {
-          setSubmitting(false);
-        },
-      },
-      theme: {
-        color: "#111827",
-      },
-    };
-
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
+    return true;
   };
 
-  const handleSubmit = async (event) => {
+  const placeOrder = async (event) => {
     event.preventDefault();
-    setError("");
 
-    const validationMessage = validate();
-    if (validationMessage) {
-      setError(validationMessage);
-      return;
-    }
+    if (!validate()) return;
+
+    setPlacing(true);
+    setMessage("Placing your order...");
 
     try {
-      setSubmitting(true);
+      const payload = {
+        orderItems: cart.map((item) => ({
+          product: item.productId || item.id,
+          name: item.name,
+          image: item.image,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        shippingAddress: {
+          fullName: form.fullName,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          postalCode: form.postalCode,
+          country: form.country || "India",
+        },
+        paymentMethod: form.paymentMethod,
+      };
 
-      if (paymentMethod === "online") {
-        await placeOnlineOrder();
-      } else {
-        await placeCodOrder();
-      }
-    } catch (submitError) {
-      setError(submitError.message || "Unable to place order. Please try again.");
-      setSubmitting(false);
+      const response = await storefrontApi.createOrder(payload);
+      const order = response.order || response.data || response;
+
+      clearCart();
+
+      navigate("/order-success", {
+        state: {
+          orderId: order._id || order.id,
+          amount: order.totalPrice || order.totalAmount || summary.total,
+          method: order.paymentMethod || form.paymentMethod,
+        },
+      });
+    } catch (error) {
+      setMessage(error.message || "Unable to place order.");
+    } finally {
+      setPlacing(false);
     }
   };
 
-  if (!summary.cart.length) {
+  if (!cart.length) {
     return (
-      <section className="page-section">
-        <div className="container">
-          <div className="state-card spacious">
-            <h1>Your cart is empty</h1>
-            <p>Add products to your cart before checkout.</p>
-            <Link className="btn btn-primary" to="/products">Shop Products</Link>
-          </div>
-        </div>
-      </section>
+      <main className="checkout-page">
+        <section className="container checkout-empty">
+          <h1>Your cart is empty</h1>
+          <p>Add products to your cart before checkout.</p>
+          <Link to="/products">Shop Products</Link>
+        </section>
+      </main>
     );
   }
 
   return (
-    <section className="page-section checkout-page">
-      <div className="container">
-        <div className="page-hero compact">
-          <span className="eyebrow">Secure Checkout</span>
-          <h1>Complete your order safely.</h1>
-          <p>Pay securely using UPI, cards, net banking, or wallets.</p>
-        </div>
+    <main className="checkout-page">
+      <section className="container checkout-grid">
+        <form className="checkout-form" onSubmit={placeOrder}>
+          <span>Checkout</span>
+          <h1>Shipping details</h1>
 
-        <form className="checkout-layout" onSubmit={handleSubmit}>
-          <div className="checkout-form">
-            <section className="form-card">
-              <h2>Delivery Details</h2>
-              <div className="form-grid">
-                <label>
-                  Full Name
-                  <input value={form.fullName} onChange={(e) => updateForm("fullName", e.target.value)} />
-                </label>
-                <label>
-                  Phone
-                  <input value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} />
-                </label>
-                <label>
-                  Email
-                  <input type="email" value={form.email} onChange={(e) => updateForm("email", e.target.value)} />
-                </label>
-                <label>
-                  Postal Code
-                  <input value={form.postalCode} onChange={(e) => updateForm("postalCode", e.target.value)} />
-                </label>
-                <label className="full-field">
-                  Address
-                  <textarea value={form.address} onChange={(e) => updateForm("address", e.target.value)} />
-                </label>
-                <label>
-                  City
-                  <input value={form.city} onChange={(e) => updateForm("city", e.target.value)} />
-                </label>
-                <label>
-                  State
-                  <input value={form.state} onChange={(e) => updateForm("state", e.target.value)} />
-                </label>
-              </div>
-            </section>
+          {message ? <p className="checkout-message">{message}</p> : null}
 
-            <section className="form-card">
-              <h2>Payment Method</h2>
-              <div className="payment-options">
-                <label className={paymentMethod === "online" ? "selected" : ""}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="online"
-                    checked={paymentMethod === "online"}
-                    onChange={() => setPaymentMethod("online")}
-                  />
-                  <span>
-                    <strong>Online Payment</strong>
-                    <small>Pay securely using UPI, cards, net banking, or wallets.</small>
-                  </span>
-                </label>
+          <div className="checkout-form-grid">
+            <label>
+              Full Name *
+              <input name="fullName" value={form.fullName} onChange={handleChange} />
+            </label>
 
-                <label className={paymentMethod === "cod" ? "selected" : ""}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="cod"
-                    checked={paymentMethod === "cod"}
-                    onChange={() => setPaymentMethod("cod")}
-                  />
-                  <span>
-                    <strong>Cash on Delivery</strong>
-                    <small>Pay when your order is delivered.</small>
-                  </span>
-                </label>
-              </div>
-            </section>
+            <label>
+              Phone *
+              <input name="phone" value={form.phone} onChange={handleChange} />
+            </label>
           </div>
 
-          <aside className="summary-card">
-            <h2>Order Summary</h2>
-            <div className="checkout-items">
-              {summary.cart.map((item) => (
-                <div key={item.id}>
-                  <span>{item.name} × {item.quantity}</span>
-                  <strong>{formatPrice(item.price * item.quantity)}</strong>
-                </div>
-              ))}
-            </div>
+          <label>
+            Complete Address *
+            <textarea
+              name="address"
+              rows="4"
+              value={form.address}
+              onChange={handleChange}
+            />
+          </label>
 
-            <div className="summary-line">
+          <div className="checkout-form-grid">
+            <label>
+              City *
+              <input name="city" value={form.city} onChange={handleChange} />
+            </label>
+
+            <label>
+              State *
+              <input name="state" value={form.state} onChange={handleChange} />
+            </label>
+
+            <label>
+              Pincode *
+              <input name="postalCode" value={form.postalCode} onChange={handleChange} />
+            </label>
+          </div>
+
+          <label>
+            Payment Method
+            <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
+              <option>Cash on Delivery</option>
+            </select>
+          </label>
+
+          <button type="submit" disabled={placing}>
+            {placing ? "Placing Order..." : "Place Order"}
+          </button>
+        </form>
+
+        <aside className="checkout-summary">
+          <span>Order Summary</span>
+          <h2>{cart.length} item(s)</h2>
+
+          <div className="checkout-items">
+            {cart.map((item) => (
+              <article key={item.id}>
+                <img src={item.image} alt={item.name} />
+                <div>
+                  <strong>{item.name}</strong>
+                  <p>
+                    {item.quantity} × {formatPrice(item.price)}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="checkout-totals">
+            <p>
               <span>Subtotal</span>
               <strong>{formatPrice(summary.subtotal)}</strong>
-            </div>
-            <div className="summary-line">
-              <span>Delivery Fee</span>
-              <strong>{summary.deliveryFee === 0 ? "Free" : formatPrice(summary.deliveryFee)}</strong>
-            </div>
-            <div className="summary-line">
-              <span>Discount</span>
-              <strong>{formatPrice(summary.discount)}</strong>
-            </div>
-            <div className="summary-line total">
-              <span>Total Payable</span>
+            </p>
+
+            <p>
+              <span>Delivery</span>
+              <strong>{formatPrice(summary.deliveryFee)}</strong>
+            </p>
+
+            <p className="grand">
+              <span>Total</span>
               <strong>{formatPrice(summary.total)}</strong>
-            </div>
-
-            {error && <p className="error-text">{error}</p>}
-
-            <button className="btn btn-primary full" type="submit" disabled={submitting}>
-              {submitting ? "Processing..." : "Place Order"}
-            </button>
-            <p className="secure-note">Secure checkout with trusted payment options.</p>
-          </aside>
-        </form>
-      </div>
-    </section>
+            </p>
+          </div>
+        </aside>
+      </section>
+    </main>
   );
 };
 

@@ -1,17 +1,15 @@
-﻿const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const orderItemSchema = new mongoose.Schema(
   {
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
-      required: true,
     },
 
     name: {
       type: String,
       required: true,
-      trim: true,
     },
 
     image: {
@@ -19,81 +17,15 @@ const orderItemSchema = new mongoose.Schema(
       default: "",
     },
 
+    quantity: {
+      type: Number,
+      default: 1,
+    },
+
     price: {
       type: Number,
       required: true,
-      min: 0,
     },
-
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
-  },
-  { _id: false }
-);
-
-const shippingAddressSchema = new mongoose.Schema(
-  {
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-    },
-
-    phone: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    address: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    state: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    pincode: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    country: {
-      type: String,
-      default: "India",
-    },
-  },
-  { _id: false }
-);
-
-const paymentResultSchema = new mongoose.Schema(
-  {
-    razorpayOrderId: String,
-    razorpayPaymentId: String,
-    razorpaySignature: String,
-    status: String,
-    paidAt: Date,
   },
   { _id: false }
 );
@@ -104,93 +36,81 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
 
-    orderItems: {
-      type: [orderItemSchema],
-      required: true,
-      validate: {
-        validator: (items) => items.length > 0,
-        message: "Order must contain at least one item",
-      },
-    },
+    orderItems: [orderItemSchema],
 
     shippingAddress: {
-      type: shippingAddressSchema,
-      required: true,
+      fullName: String,
+      phone: String,
+      address: String,
+      addressLine1: String,
+      city: String,
+      state: String,
+      postalCode: String,
+      country: {
+        type: String,
+        default: "India",
+      },
     },
 
     paymentMethod: {
       type: String,
-      enum: ["Razorpay", "COD", "Demo"],
-      default: "Razorpay",
+      default: "Cash on Delivery",
     },
 
-    paymentResult: paymentResultSchema,
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Paid", "Failed", "Refunded"],
+      default: "Pending",
+    },
+
+    orderStatus: {
+      type: String,
+      enum: ["Pending", "Confirmed", "Packed", "Shipped", "Delivered", "Cancelled"],
+      default: "Pending",
+    },
+
+    status: {
+      type: String,
+      default: "Pending",
+    },
 
     itemsPrice: {
       type: Number,
-      required: true,
-      min: 0,
-    },
-
-    deliveryPrice: {
-      type: Number,
       default: 0,
-      min: 0,
     },
 
     taxPrice: {
       type: Number,
       default: 0,
-      min: 0,
     },
 
-    platformFee: {
+    shippingPrice: {
       type: Number,
       default: 0,
-      min: 0,
     },
 
     totalPrice: {
       type: Number,
-      required: true,
-      min: 0,
+      default: 0,
+    },
+
+    totalAmount: {
+      type: Number,
+      default: 0,
     },
 
     isPaid: {
       type: Boolean,
       default: false,
-      index: true,
     },
 
     paidAt: Date,
 
-    isDelivered: {
-      type: Boolean,
-      default: false,
-    },
-
     deliveredAt: Date,
-
-    status: {
-      type: String,
-      enum: ["pending", "paid", "processing", "shipped", "delivered", "cancelled"],
-      default: "pending",
-      index: true,
-    },
-
-    cancellationReason: {
-      type: String,
-      default: "",
-    },
   },
   { timestamps: true }
 );
-
-orderSchema.index({ user: 1, createdAt: -1 });
-orderSchema.index({ status: 1, createdAt: -1 });
-orderSchema.index({ isPaid: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Order", orderSchema);

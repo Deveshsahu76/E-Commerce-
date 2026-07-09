@@ -1,4 +1,4 @@
-﻿const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
@@ -6,67 +6,90 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Product name is required"],
       trim: true,
-      maxlength: [120, "Product name cannot exceed 120 characters"],
+    },
+
+    brand: {
+      type: String,
+      default: "ShopSphere",
+      trim: true,
+    },
+
+    category: {
+      type: String,
+      required: true,
+      default: "Snake Repeller",
+      trim: true,
+    },
+
+    shortDescription: {
+      type: String,
+      default: "",
     },
 
     description: {
       type: String,
       required: [true, "Description is required"],
-      trim: true,
-      maxlength: [2500, "Description cannot exceed 2500 characters"],
+      default: "",
     },
 
     price: {
       type: Number,
       required: [true, "Price is required"],
-      min: [0, "Price cannot be negative"],
       default: 0,
     },
 
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-      index: true,
+    originalPrice: {
+      type: Number,
+      default: 0,
+    },
+
+    mrp: {
+      type: Number,
+      default: 0,
     },
 
     stock: {
       type: Number,
       required: true,
-      min: [0, "Stock cannot be negative"],
       default: 0,
     },
 
     images: [
       {
         type: String,
-        trim: true,
       },
     ],
 
-    brand: {
+    image: {
       type: String,
-      trim: true,
       default: "",
     },
+
+    imageUrl: {
+      type: String,
+      default: "",
+    },
+
+    highlights: [
+      {
+        type: String,
+      },
+    ],
+
+    tags: [
+      {
+        type: String,
+      },
+    ],
 
     rating: {
       type: Number,
       default: 0,
-      min: 0,
-      max: 5,
     },
 
     numReviews: {
       type: Number,
       default: 0,
-      min: 0,
-    },
-
-    sold: {
-      type: Number,
-      default: 0,
-      min: 0,
     },
 
     isFeatured: {
@@ -77,23 +100,9 @@ const productSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
-      index: true,
     },
   },
   { timestamps: true }
 );
-
-productSchema.index({
-  name: "text",
-  description: "text",
-  brand: "text",
-});
-
-productSchema.index({ category: 1, price: 1 });
-productSchema.index({ price: 1 });
-productSchema.index({ rating: -1 });
-productSchema.index({ sold: -1 });
-productSchema.index({ createdAt: -1 });
-productSchema.index({ isActive: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Product", productSchema);
