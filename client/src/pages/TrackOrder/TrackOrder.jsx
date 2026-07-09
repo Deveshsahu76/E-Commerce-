@@ -1,51 +1,70 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
 const TrackOrder = () => {
   const [orderId, setOrderId] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!orderId.trim()) {
+      setMessage("Please enter a valid order ID.");
+      return;
+    }
+
+    setMessage(
+      "Order tracking request received. Full live tracking can be connected with courier/order status APIs later. For now, please check your Orders page or contact support with this order ID."
+    );
+  };
 
   return (
-    <section className="page-section">
-      <div className="container">
-        <div className="page-hero compact">
-          <span className="eyebrow">Track Order</span>
-          <h1>Check your order status.</h1>
-          <p>Enter your order ID to quickly move to your order details.</p>
-        </div>
+    <main className="track-page">
+      <section className="container track-card">
+        <span>Track Order</span>
+        <h1>Check your order status</h1>
+        <p>
+          Enter your order ID to check delivery progress. Admin can update order
+          status from the admin panel.
+        </p>
 
-        <div className="track-card">
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              setSubmitted(true);
-            }}
-          >
-            <label>
-              Order ID
-              <input
-                value={orderId}
-                onChange={(event) => setOrderId(event.target.value)}
-                placeholder="Enter order ID"
-              />
-            </label>
-            <button className="btn btn-primary" type="submit">Track Order</button>
-          </form>
+        <form onSubmit={handleSubmit}>
+          <input
+            value={orderId}
+            onChange={(event) => setOrderId(event.target.value)}
+            placeholder="Enter your order ID"
+          />
+          <button type="submit">Track Order</button>
+        </form>
 
-          {submitted && (
-            <div className="state-card">
-              <h2>Order tracking</h2>
-              <p>If you are logged in, open your order details page for live status.</p>
-              {orderId ? (
-                <Link className="btn btn-ghost" to={`/orders/${orderId}`}>Open Order Details</Link>
-              ) : (
-                <Link className="btn btn-ghost" to="/orders">Go to My Orders</Link>
-              )}
-            </div>
-          )}
+        {message ? <div className="track-message">{message}</div> : null}
+
+        <div className="track-steps">
+          <article>
+            <strong>1</strong>
+            <h3>Pending</h3>
+            <p>Order placed and waiting for confirmation.</p>
+          </article>
+
+          <article>
+            <strong>2</strong>
+            <h3>Confirmed</h3>
+            <p>Order confirmed by admin.</p>
+          </article>
+
+          <article>
+            <strong>3</strong>
+            <h3>Shipped</h3>
+            <p>Product shipped for delivery.</p>
+          </article>
+
+          <article>
+            <strong>4</strong>
+            <h3>Delivered</h3>
+            <p>Order delivered successfully.</p>
+          </article>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
   );
 };
 

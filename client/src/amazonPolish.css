@@ -749,3 +749,244 @@ a {
     height: 300px;
   }
 }
+/* =====================================================
+   Support + Track Order Polish
+===================================================== */
+
+.support-page,
+.track-page {
+  padding: 34px 0 70px;
+  background: #f7faf5;
+  color: #14213d;
+}
+
+.support-hero {
+  margin-bottom: 24px;
+}
+
+.support-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+}
+
+.support-hero__grid > div,
+.support-card,
+.support-form,
+.support-faq,
+.track-card {
+  background: #ffffff;
+  border: 1px solid #e5eee2;
+  border-radius: 26px;
+  box-shadow: 0 16px 34px rgba(20, 33, 61, 0.08);
+}
+
+.support-hero__grid > div:first-child {
+  padding: 34px;
+}
+
+.support-card {
+  padding: 28px;
+}
+
+.support-hero span,
+.support-form span,
+.support-faq span,
+.track-card span {
+  color: #96700e;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.support-hero h1,
+.track-card h1 {
+  max-width: 800px;
+  margin: 12px 0 16px;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.support-hero p,
+.support-card p,
+.support-form p,
+.support-faq p,
+.track-card p {
+  color: #5f6f63;
+  line-height: 1.7;
+}
+
+.support-card h2 {
+  margin: 0 0 10px;
+}
+
+.support-card strong {
+  display: block;
+  margin: 8px 0;
+  font-size: 1.45rem;
+  color: #1f7a4d;
+}
+
+.support-note {
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fff8e8;
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 430px;
+  gap: 20px;
+  align-items: start;
+}
+
+.support-form,
+.support-faq {
+  padding: 26px;
+}
+
+.support-form h2,
+.support-faq h2 {
+  margin: 8px 0 18px;
+  letter-spacing: -0.04em;
+}
+
+.support-form label {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  font-weight: 850;
+}
+
+.support-form input,
+.support-form textarea,
+.track-card input {
+  width: 100%;
+  border: 1px solid #dce8d7;
+  border-radius: 14px;
+  padding: 0 14px;
+  outline: none;
+  background: #ffffff;
+  color: #14213d;
+}
+
+.support-form input,
+.track-card input {
+  min-height: 46px;
+}
+
+.support-form textarea {
+  padding-top: 12px;
+  resize: vertical;
+}
+
+.support-form button,
+.track-card button {
+  min-height: 46px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 18px;
+  background: #1f7a4d;
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.support-form button {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.support-success,
+.track-message {
+  padding: 14px;
+  border-radius: 16px;
+  background: #eff8ec;
+  color: #1f7a4d;
+  margin-bottom: 14px;
+  font-weight: 800;
+}
+
+.support-faq article {
+  padding: 16px;
+  border: 1px solid #e5eee2;
+  border-radius: 18px;
+  margin-top: 12px;
+  background: #ffffff;
+}
+
+.support-faq h3 {
+  margin: 0 0 8px;
+}
+
+.track-card {
+  padding: 34px;
+}
+
+.track-card form {
+  display: grid;
+  grid-template-columns: 1fr 160px;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.track-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.track-steps article {
+  padding: 16px;
+  border: 1px solid #e5eee2;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.track-steps strong {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #1f7a4d;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.track-steps h3 {
+  margin: 0 0 8px;
+}
+
+@media (max-width: 900px) {
+  .support-hero__grid,
+  .support-grid,
+  .track-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .track-card form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .support-hero__grid > div:first-child,
+  .support-card,
+  .support-form,
+  .support-faq,
+  .track-card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .support-hero h1,
+  .track-card h1 {
+    font-size: 2.15rem;
+  }
+}
+
