@@ -17,16 +17,16 @@ const getTransporter = () => {
   cachedTransporter = nodemailer.createTransport({
     host,
     port,
-    secure: process.env.SMTP_SECURE === "true",
+    secure: process.env.SMTP_SECURE === "true" || port === 465,
     auth: {
       user,
       pass,
     },
     family: 4,
     requireTLS: port === 587,
-    connectionTimeout: 8000,
-    greetingTimeout: 8000,
-    socketTimeout: 12000,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     tls: {
       servername: host,
       minVersion: "TLSv1.2",
@@ -37,11 +37,15 @@ const getTransporter = () => {
 };
 
 const sendEmail = async ({ to, subject, text, html }) => {
+  if (!to || !subject || (!text && !html)) {
+    throw new Error("Email to, subject and content are required.");
+  }
+
   const transporter = getTransporter();
 
   const from = process.env.SMTP_FROM || `ShopSphere <${process.env.SMTP_USER}>`;
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from,
     to,
     subject,
@@ -49,7 +53,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
     html,
   });
 
-  return true;
+  return info;
 };
 
 module.exports = sendEmail;

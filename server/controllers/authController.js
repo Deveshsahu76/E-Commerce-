@@ -6,7 +6,7 @@ const sendEmail = require("../utils/sendEmail");
 const OTP_EXPIRY_MINUTES = 10;
 const MAX_OTP_ATTEMPTS = 5;
 
-const normalizeEmail = (email = "") => email.toLowerCase().trim();
+const normalizeEmail = (email = "") => String(email).toLowerCase().trim();
 
 const generateOtp = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -17,17 +17,24 @@ const buildOtpEmail = ({ name, otp }) => {
 
   return {
     subject: "ShopSphere Password Reset OTP",
-    text: `Hello ${safeName}, your ShopSphere password reset OTP is ${otp}. This OTP is valid for ${OTP_EXPIRY_MINUTES} minutes. If you did not request this, please ignore this email.`,
+    text: `Hello ${safeName},
+
+Your ShopSphere password reset OTP is ${otp}.
+
+This OTP is valid for ${OTP_EXPIRY_MINUTES} minutes.
+
+If you did not request this, please ignore this email.`,
+
     html: `
-      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;max-width:560px;margin:auto;border:1px solid #eee;border-radius:16px;padding:24px">
-        <h2 style="margin:0 0 10px">ShopSphere Password Reset OTP</h2>
+      <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:24px;border:1px solid #e5eee2;border-radius:18px">
+        <h2 style="margin:0 0 10px;color:#14213d">ShopSphere Password Reset OTP</h2>
         <p>Hello ${safeName},</p>
         <p>Use the OTP below to reset your ShopSphere account password.</p>
-        <div style="font-size:32px;letter-spacing:8px;font-weight:800;background:#f7f3ec;padding:16px 20px;border-radius:14px;text-align:center">
+        <div style="font-size:30px;font-weight:900;letter-spacing:6px;background:#f7faf5;color:#1f7a4d;padding:18px;border-radius:14px;text-align:center">
           ${otp}
         </div>
-        <p>This OTP is valid for <strong>${OTP_EXPIRY_MINUTES} minutes</strong>.</p>
-        <p>If you did not request this, you can safely ignore this email.</p>
+        <p>This OTP is valid for <b>${OTP_EXPIRY_MINUTES} minutes</b>.</p>
+        <p style="color:#5f6f63">If you did not request this, you can safely ignore this email.</p>
       </div>
     `,
   };
@@ -80,6 +87,7 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.error("REGISTER ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: "Unable to register user",
@@ -129,6 +137,7 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error("LOGIN ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: "Unable to login",
@@ -144,6 +153,7 @@ const getMe = async (req, res) => {
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: "Unable to fetch user profile",
@@ -162,12 +172,14 @@ const forgotPassword = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select(
+      "+resetPasswordOtpHash +resetPasswordOtpExpires +resetPasswordOtpAttempts"
+    );
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "No account found with this email.",
+      return res.status(200).json({
+        success: true,
+        message: "If this email is registered, an OTP will be sent.",
       });
     }
 
@@ -196,20 +208,14 @@ const forgotPassword = async (req, res) => {
       success: true,
       message: "OTP sent successfully to your registered email.",
     });
-  }  catch (error) {
-  console.error("FORGOT PASSWORD ERROR:", {
-    message: error.message,
-    code: error.code,
-    command: error.command,
-    response: error.response,
-    responseCode: error.responseCode,
-  });
+  } catch (error) {
+    console.error("FORGOT PASSWORD ERROR:", error);
 
-  res.status(500).json({
-    success: false,
-    message: "Unable to send OTP. Please check email service configuration.",
-  });
-}
+    res.status(500).json({
+      success: false,
+      message: "Unable to send OTP. Please check email service configuration.",
+    });
+  }
 };
 
 const resetPassword = async (req, res) => {
@@ -253,6 +259,7 @@ const resetPassword = async (req, res) => {
       user.resetPasswordOtpHash = undefined;
       user.resetPasswordOtpExpires = undefined;
       user.resetPasswordOtpAttempts = 0;
+
       await user.save({ validateBeforeSave: false });
 
       return res.status(400).json({
@@ -265,6 +272,7 @@ const resetPassword = async (req, res) => {
       user.resetPasswordOtpHash = undefined;
       user.resetPasswordOtpExpires = undefined;
       user.resetPasswordOtpAttempts = 0;
+
       await user.save({ validateBeforeSave: false });
 
       return res.status(429).json({
@@ -289,6 +297,7 @@ const resetPassword = async (req, res) => {
     user.resetPasswordOtpHash = undefined;
     user.resetPasswordOtpExpires = undefined;
     user.resetPasswordOtpAttempts = 0;
+    user.lastPasswordResetAt = new Date();
 
     await user.save();
 
@@ -298,6 +307,7 @@ const resetPassword = async (req, res) => {
     });
   } catch (error) {
     console.error("RESET PASSWORD ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: "Unable to reset password",

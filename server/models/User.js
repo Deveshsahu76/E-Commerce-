@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
       required: [true, "Name is required"],
       trim: true,
     },
+
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -15,25 +16,30 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+
     password: {
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
       select: false,
     },
+
     phone: {
       type: String,
       default: "",
     },
+
     avatar: {
       type: String,
       default: "",
     },
+
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
     },
+
     isVerified: {
       type: Boolean,
       default: false,
@@ -43,14 +49,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+
     resetPasswordOtpExpires: {
       type: Date,
       select: false,
     },
+
     resetPasswordOtpAttempts: {
       type: Number,
       default: 0,
       select: false,
+    },
+
+    lastPasswordResetAt: {
+      type: Date,
     },
   },
   { timestamps: true }
@@ -58,6 +70,7 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
+
   this.password = await bcrypt.hash(this.password, 10);
 });
 
