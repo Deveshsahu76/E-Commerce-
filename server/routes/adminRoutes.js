@@ -98,6 +98,8 @@ const normalizeProductPayload = (body = {}) => {
     stock: Number(body.stock || 0),
     shortDescription: body.shortDescription || "",
     description: body.description || body.shortDescription || "",
+    highlights: splitLines(body.highlights),
+    tags: splitLines(body.tags),
     isFeatured: Boolean(body.isFeatured),
     isActive: body.isActive === undefined ? true : Boolean(body.isActive),
   };
@@ -113,9 +115,83 @@ const normalizeProductPayload = (body = {}) => {
 
 router.use(protectAdmin);
 
+router.get("/dashboard", async (req, res) => {
+  try {
+    const totalProducts = await Product.countDocuments({});
+    const activeProducts = await Product.countDocuments({
+      $or: [{ isActive: true }, { isActive: { $exists: false } }],
+    });
+    const lowStockProducts = await Product.countDocuments({
+      stock: { $lte: 5 },
+    });
+
+    let totalOrders = 0;
+    let pendingOrders = 0;
+    let deliveredOrders = 0;
+    let totalRevenue = 0;
+    let recentOrders = [];
+
+    if (Order) {
+      const orders = await Order.find({}).sort({ createdAt: -1 }).limit(100);
+
+      recentOrders = orders.slice(0, 8);
+      totalOrders = orders.length;
+
+      pendingOrders = orders.filter((order) => {
+        const status = String(order.orderStatus || order.status || "Pending").toLowerCase();
+        return ["pending", "confirmed", "packed", "processing"].includes(status);
+      }).length;
+
+      deliveredOrders = orders.filter((order) => {
+        const status = String(order.orderStatus || order.status || "").toLowerCase();
+        return status.includes("delivered");
+      }).length;
+
+      totalRevenue = orders.reduce((sum, order) => {
+        return sum + Number(order.totalAmount || order.totalPrice || order.total || 0);
+      }, 0);
+    }
+
+    const latestProducts = await Product.find({}).sort({ createdAt: -1 }).limit(8);
+
+    res.json({
+      success: true,
+      stats: {
+        totalProducts,
+        activeProducts,
+        lowStockProducts,
+        totalOrders,
+        pendingOrders,
+        deliveredOrders,
+        totalRevenue,
+      },
+      latestProducts,
+      recentOrders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Unable to load dashboard",
+      error: error.message,
+    });
+  }
+});
+
 router.get("/products", async (req, res) => {
   try {
-    const products = await Product.find({}).sort({ createdAt: -1 });
+    const keyword = req.query.keyword || "";
+
+    const query = keyword
+      ? {
+          $or: [
+            { name: { $regex: keyword, $options: "i" } },
+            { category: { $regex: keyword, $options: "i" } },
+            { brand: { $regex: keyword, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const products = await Product.find(query).sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -235,6 +311,37 @@ router.get("/orders", async (req, res) => {
   }
 });
 
+router.get("/orders/:id", async (req, res) => {
+  try {
+    if (!Order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order model not found",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Unable to load order",
+      error: error.message,
+    });
+  }
+});
+
 router.put("/orders/:id/status", async (req, res) => {
   try {
     if (!Order) {
@@ -255,19 +362,56 @@ router.put("/orders/:id/status", async (req, res) => {
 
     if (req.body.orderStatus !== undefined) order.orderStatus = req.body.orderStatus;
     if (req.body.status !== undefined) order.status = req.body.status;
-    if (req.body.paymentStatus !== undefined) order.paymentStatus = req.body.paymentStatus;
 
     await order.save();
 
     res.json({
       success: true,
-      message: "Order updated successfully",
+      message: "Order status updated successfully",
       order,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Unable to update order",
+      message: "Unable to update order status",
+      error: error.message,
+    });
+  }
+});
+
+router.put("/orders/:id/payment", async (req, res) => {
+  try {
+    if (!Order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order model not found",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (req.body.paymentStatus !== undefined) {
+      order.paymentStatus = req.body.paymentStatus;
+    }
+
+    await order.save();
+
+    res.json({
+      success: true,
+      message: "Payment status updated successfully",
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Unable to update payment status",
       error: error.message,
     });
   }
