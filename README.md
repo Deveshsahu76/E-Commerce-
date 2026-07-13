@@ -127,3 +127,10 @@ E-Commerce-
 - User authentication
 - Product management
 - Responsive interface
+
+## Tech Stack
+
+- React.js
+- Node.js
+- Express.js
+- MongoDB
