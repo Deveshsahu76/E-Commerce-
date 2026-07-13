@@ -79,6 +79,8 @@ The application includes a React frontend deployed on Vercel and an Express/Mong
 ## Folder Structure
 
 ```txt
+
+
 E-Commerce-
 â”œâ”€â”€ client
 â”‚   â”œâ”€â”€ public
@@ -118,3 +120,10 @@ E-Commerce-
 â”œâ”€â”€ .gitignore
 â”œâ”€â”€ .gitattributes
 â””â”€â”€ README.mdï»¿# E-Commerce-
+
+
+## Features
+
+- User authentication
+- Product management
+- Responsive interface
