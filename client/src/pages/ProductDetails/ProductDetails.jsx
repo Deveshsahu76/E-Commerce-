@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../../components/common/ProductCard";
+import ProductGallery from "../../components/common/ProductGallery";
 import LoadingGrid from "../../components/common/LoadingGrid";
 import { normalizeProductsResponse, storefrontApi } from "../../services/storefrontApi";
 import { addToCart } from "../../utils/cartUtils";
@@ -112,22 +113,10 @@ const ProductDetails = () => {
 
         <div className="market-detail-shell">
           <div className="market-gallery">
-            <div className="market-thumbs">
-              {images.slice(0, 5).map((image) => (
-                <button
-                  type="button"
-                  key={image}
-                  className={activeImage === image ? "active" : ""}
-                  onClick={() => setActiveImage(image)}
-                >
-                  <img src={image} alt={product.name} />
-                </button>
-              ))}
-            </div>
-
-            <div className="market-main-image">
-              <img src={activeImage || images[0]} alt={product.name} />
-            </div>
+            <ProductGallery
+              images={images}
+              productName={product.name}
+            />
           </div>
 
           <div className="market-detail-info">

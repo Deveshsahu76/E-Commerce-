@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ProductImageUploader from "../../components/admin/ProductImageUploader";
 import "./admin.css";
 
 const API_BASE =
@@ -609,16 +610,16 @@ const AdminPanel = () => {
               />
             </label>
 
-            <label>
-              Product Image URLs
-              <textarea
-                name="images"
-                rows="4"
-                value={form.images}
-                onChange={handleChange}
-                placeholder="Paste one image URL per line"
-              />
-            </label>
+            <ProductImageUploader
+              value={form.images}
+              onChange={(images) =>
+                setForm((previous) => ({
+                  ...previous,
+                  images,
+                }))
+              }
+              onMessage={setMessage}
+            />
 
             <label className="admin-check">
               <input

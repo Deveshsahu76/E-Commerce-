@@ -1,0 +1,241 @@
+.product-gallery {
+  min-width: 0;
+}
+
+.product-gallery__main {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #e5eee2;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.product-gallery__image-button {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: #ffffff;
+  cursor: zoom-in;
+}
+
+.product-gallery__image-button img {
+  width: 100%;
+  height: 520px;
+  display: block;
+  padding: 18px;
+  object-fit: contain;
+  background: #ffffff;
+  transition: transform 0.25s ease;
+}
+
+.product-gallery__image-button:hover img {
+  transform: scale(1.035);
+}
+
+.product-gallery__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  width: 44px;
+  height: 56px;
+  border: 1px solid #e5eee2;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #14213d;
+  font-size: 1.45rem;
+  font-weight: 900;
+  cursor: pointer;
+  transform: translateY(-50%);
+  box-shadow:
+    0 8px 20px rgba(20, 33, 61, 0.14);
+}
+
+.product-gallery__arrow--left {
+  left: 12px;
+}
+
+.product-gallery__arrow--right {
+  right: 12px;
+}
+
+.product-gallery__counter {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(16, 24, 39, 0.82);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.product-gallery__thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 4px 2px 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+.product-gallery__thumbs button {
+  width: 76px;
+  height: 76px;
+  min-width: 76px;
+  padding: 5px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.product-gallery__thumbs button.active {
+  border-color: #1f7a4d;
+  box-shadow:
+    0 0 0 3px rgba(31, 122, 77, 0.12);
+}
+
+.product-gallery__thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-gallery__dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.product-gallery__dots button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #cbd5c7;
+  cursor: pointer;
+}
+
+.product-gallery__dots button.active {
+  width: 22px;
+  border-radius: 999px;
+  background: #1f7a4d;
+}
+
+.product-gallery--empty {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  color: #5f6f63;
+}
+
+.product-gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 70px;
+  background: rgba(5, 12, 20, 0.94);
+}
+
+.product-gallery-lightbox img {
+  max-width: min(1100px, 92vw);
+  max-height: 82vh;
+  object-fit: contain;
+}
+
+.product-gallery-lightbox__close {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  min-height: 42px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #14213d;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.product-gallery-lightbox__arrow {
+  position: absolute;
+  top: 50%;
+  width: 54px;
+  height: 64px;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #14213d;
+  font-size: 1.65rem;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.product-gallery-lightbox__arrow--left {
+  left: 24px;
+}
+
+.product-gallery-lightbox__arrow--right {
+  right: 24px;
+}
+
+.product-gallery-lightbox > span {
+  position: absolute;
+  bottom: 22px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+@media (max-width: 720px) {
+  .product-gallery__image-button img {
+    height: 360px;
+    padding: 10px;
+  }
+
+  .product-gallery__arrow {
+    width: 38px;
+    height: 48px;
+  }
+
+  .product-gallery__arrow--left {
+    left: 7px;
+  }
+
+  .product-gallery__arrow--right {
+    right: 7px;
+  }
+
+  .product-gallery__thumbs button {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+  }
+
+  .product-gallery-lightbox {
+    padding: 56px 12px;
+  }
+
+  .product-gallery-lightbox__arrow {
+    width: 42px;
+    height: 52px;
+  }
+
+  .product-gallery-lightbox__arrow--left {
+    left: 8px;
+  }
+
+  .product-gallery-lightbox__arrow--right {
+    right: 8px;
+  }
+}
