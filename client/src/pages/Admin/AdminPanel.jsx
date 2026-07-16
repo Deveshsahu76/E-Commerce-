@@ -15,7 +15,10 @@ const emptyProduct = {
   stock: "",
   shortDescription: "",
   description: "",
+  highlights: "",
+  tags: "",
   images: "",
+  isFeatured: false,
   isActive: true,
 };
 
@@ -337,12 +340,19 @@ const AdminPanel = () => {
       stock: product.stock || "",
       shortDescription: product.shortDescription || "",
       description: product.description || "",
+      highlights: Array.isArray(product.highlights)
+        ? product.highlights.join("\n")
+        : "",
+      tags: Array.isArray(product.tags)
+        ? product.tags.join("\n")
+        : "",
       images: Array.isArray(product.images)
         ? product.images
             .map((item) => (typeof item === "string" ? item : item?.url || ""))
             .filter(Boolean)
             .join("\n")
         : product.image || product.imageUrl || "",
+      isFeatured: Boolean(product.isFeatured),
       isActive: product.isActive === undefined ? true : Boolean(product.isActive),
     });
 
@@ -604,10 +614,35 @@ const AdminPanel = () => {
               Full Description
               <textarea
                 name="description"
-                rows="4"
+                rows="5"
                 value={form.description}
                 onChange={handleChange}
+                placeholder="Write complete product description, usage and benefits"
               />
+            </label>
+
+            <label>
+              Product Highlights
+              <textarea
+                name="highlights"
+                rows="6"
+                value={form.highlights}
+                onChange={handleChange}
+                placeholder={"Write one highlight per line\n\nExample:\nSolar powered device\nWeather resistant body\nEasy installation\nSuitable for home and farm\nLow maintenance"}
+              />
+              <small>Write one product highlight on each line.</small>
+            </label>
+
+            <label>
+              Search Tags
+              <textarea
+                name="tags"
+                rows="4"
+                value={form.tags}
+                onChange={handleChange}
+                placeholder={"Write one search tag per line\n\nExample:\nsnake repellent\nsolar pest control\nfarm protection\ngarden safety"}
+              />
+              <small>These tags will help users find the product.</small>
             </label>
 
             <ProductImageUploader
@@ -621,15 +656,27 @@ const AdminPanel = () => {
               onMessage={setMessage}
             />
 
-            <label className="admin-check">
-              <input
-                name="isActive"
-                type="checkbox"
-                checked={form.isActive}
-                onChange={handleChange}
-              />
-              Active Product
-            </label>
+            <div className="admin-product-options">
+              <label className="admin-check">
+                <input
+                  name="isFeatured"
+                  type="checkbox"
+                  checked={form.isFeatured}
+                  onChange={handleChange}
+                />
+                Featured Product
+              </label>
+
+              <label className="admin-check">
+                <input
+                  name="isActive"
+                  type="checkbox"
+                  checked={form.isActive}
+                  onChange={handleChange}
+                />
+                Active Product
+              </label>
+            </div>
 
             <button type="submit" className="admin-primary-btn">
               {editingId ? "Update Product" : "Add Product"}

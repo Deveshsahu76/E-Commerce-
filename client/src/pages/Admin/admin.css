@@ -372,3 +372,37 @@
     align-items: flex-start;
   }
 }
+
+/* Product detail fields phase */
+
+.admin-form label small {
+  display: block;
+  margin-top: 7px;
+  color: #71806f;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.admin-product-options {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #dce8d7;
+  border-radius: 16px;
+  background: #f8fbf7;
+}
+
+.admin-product-options .admin-check {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .admin-product-options {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+}
